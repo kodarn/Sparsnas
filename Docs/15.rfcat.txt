@@ -1,0 +1,65 @@
+#
+#
+#
+#    d.setFreq(868000000)             #
+#    d.setMdmModulation(MOD_2FSK)     # Img 02 Represent binary 1's & 0's width the frequencies F1 & F2.
+#    d.setMdmChanSpc(40000)           # Img 02 Distance between the center frequencies of two transmission adjacent channels (F1 - F2)
+#                                     #        If Channel 1 is on 500MHz and the next channel on 501MHZ, then the channel spacing is 1MHz.
+#                                     #        (500 and 501MHz are also called the center frequencies)
+#    d.setMdmDeviatn(20000)           # Img 02 The absolute value of the difference between the center frequency and the F1 or F2 frequencies. 
+#                                     #        The deviation is also equal, numerically, to one-half of the Channel Space.
+#    d.setMdmChanBW(78391)            # Img 02 The "width" of the signal on one particular channel
+#                                     #        If the bandwith is 500kHz then the frequency range on aforementioned Channel 1 would occupy 500MHz +/-250kHz
+#                                     #        (measured at 3dB from the peak).
+#                                     #        In many systems the channel spacing is equal to the bandwidth though as it's the most efficient way
+#                                     #        of using the frequency band available.
+#    d.setMdmNumPreamble(32)          # Img 07 Length in bits of the pattern identifying the start of the transmission.
+#                                     #        The preamble is a changing pattern from high to low at the appropriate speed. When looking at packet captures
+#                                     #        this preamble will be represented as a continuous string of 0xAA(10101010) or 0x55(01010101) characters.
+#    d.setMdmDRate(38391)             # Img 08 Symbols per seconds
+#    d.setMdmSyncWord(0xD201)         # Img 12 Syncwords are leveraged to distinguish between radio networks and the beginning of packet data.
+#    d.setMdmSyncMode(1)              #        Syncmode: 15 of 16 bits must match
+#    d.makePktFLEN(20)                # Img 12 Length in bytes of the transmission without preable and syncword
+#    d.setMaxPower()
+#
+#
+#
+# http://edge.rit.edu/edge/P09141/public/FSK.pdf
+#   Carrier frequency         = 868000000
+#   mark/higher/f1            = binary 1
+#   space/lower/f2            = binary 0
+#   shift frequency           = frequency difference between the mark and space
+#   nominal center frequency  = halfway between the mark and space frequencies
+#   deviation                 = The absolute value of the difference between the center frequency and the mark or space frequencies. 
+#                               The deviation is also equal, numerically, to one-half of the shift.
+#
+#
+#
+# Base/carrier frequency:     868000000
+# Channel spacing:            Distance between the center frequencies of two transmission areas
+# Xtal frequency:             Xtal is short for Crystal. 
+# Data rate:                  Symbols per seconds (kbps)
+#                             If a symbol is 20 mSec long, (F = 1 / T) -> F = 1 / 0.02 -> 50 bps
+# Deviation: 
+#
+
+
+def init(d):
+    d.setFreq(868000000)             #
+    d.setMdmModulation(MOD_2FSK)     # Represent binary 1's & 0's width the frequencies F1 & F2.
+    d.setMdmChanSpc(40000)           # Distance between the center frequencies of two transmission adjacent channels (F1 - F2)
+                                     # If Channel 1 is on 500MHz and the next channel on 501MHZ, then the channel spacing is 1MHz.
+                                     # (500 and 501MHz are also called the center frequencies)
+    d.setMdmDeviatn(20000)           # The absolute value of the difference between the center frequency and the F1 or F2 frequencies. 
+                                     # The deviation is also equal, numerically, to one-half of the Channel Space.
+    d.setMdmNumPreamble(32)          # Length in bits of the pattern identifying the start of the transmission.
+                                     # The preamble is a changing pattern from high to low at the appropriate speed. When looking at packet captures
+                                     # this preamble will be represented as a continuous string of 0xAA(10101010) or 0x55(01010101) characters.
+    d.setMdmDRate(38391)             # Symbols per seconds
+    d.setMdmSyncWord(0xD201)         # Syncwords are leveraged to distinguish between radio networks and the beginning of packet data.
+    d.setMdmSyncMode(1)              # Syncmode: 15 of 16 bits must match
+    d.makePktFLEN(20)                # Length in bytes of the transmission without preable and syncword
+    d.setMaxPower()
+
+init(d)
+d.RFlisten()
