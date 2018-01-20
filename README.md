@@ -89,7 +89,7 @@ To start doing this, we need to feed the things we have seen so far in the analy
 
 By starting RfCat, defining the function init(d) and calling it we have configured the CC1111-chip. To start listening we call d.RFlisten() and as you can see we start to get some packets.
 
-However, to be able to test the packet content better, we write a small Python script:
+However, to be able to test the packet content better, we write a small Python script. Take a moment to read it, in order to get an understanding of whats going on:
 
 ```python
 #=============================================================================
@@ -221,23 +221,31 @@ At this point, we know nothing of the internal packet layout, but we can start t
 
 ### Constants
 
- * Variable identifiers (data for variable X is always prepended with the constant Y)
+ * Variable identifiers (such as data for variable X is always prepended with the constant Y)
  * Length fields (packet length, length of individual fields in the packet, etc)
  * Sync words or other "magics" 
  * Sender identifiers (addresses, serials, hardware or software versions/revisions)
- * ...
+ * etc
 
 ### Variables
 
  * Timestamps
- * Things we see on the display
+ * Things we (in this case) see on the display
    * Current power usage seen on the display
    * Accumulative power consumption seen on the display
    * Battery life properties
  * Signal strength/RSSI if we're dealing with a two-way communication protocol
- * Extra crcs or other hashes
- * ...
+ * Extra crc's or other hashes
+ * etc
 
-The list goes on an on, but lets start with those elements for now. When identifying element-patterns we need to control the signal being sent as much as possible. Therefore we build this simple led-blinker with an Arduino board. The led is flashing at a predetermined rate which value we can observe on the receiving display. Other things we may consider to do is to hook up the sensor to a voltage cube and vary the input voltage. A third option is to decode signal for different senders which may have different sender properties or identifiers. 
+The list goes on an on, but lets start with those elements for now. When identifying element-patterns we need to control the signal being sent as much as possible. Therefore we build a simple led-blinker with an Arduino board. The led is flashing at a predetermined rate which we control. Knowing the stable flash rate we can observe what kWh they translate into on the receiving display. This is a good starting point for our analysis. Other things we may consider is to hook up the sensor to a voltage cube and vary the transmitters battery voltage. A third option is to purchase several Sparsnäs devices, and decode signals from the different senders which may have different sender properties or identifiers. 
+
+## Led blink helper tool
+<img src="LedBlinkerHelperTool/LedFlasher.png"  width="200" />
+<img src="LedBlinkerHelperTool/LedFlasher2.jpg"  width="246" />
+
+You can find the source code [here](LedBlinkerHelperTool/LedFlasher.ino).
+
+We hook up the Sparsnäs sensor to the red led to the right in the image above. Using the yellow and green push buttons we can increase or decrease the delay between led blinks, allowing us to experiment while running our RfCat on the side.
 
 XXX TODO: continue to document the analysis here
