@@ -217,6 +217,27 @@ while True:
 When we run the script and start to get some data, we quickly identify that the packet contents does not match what is shown on the receiving display. We can therefore conclude that the packet content is scrambled in some way.
 
 ![First attempt to look for patterns in packet content](Docs/17.First.attempt.to.look.for.patterns.in.packet.content.png?raw=true "First attempt to look for patterns in packet content")
-At this point, we know nothing of the internal packet layout, but we can start to identify patterns. 
+At this point, we know nothing of the internal packet layout, but we can start to identify patterns. This is a creative process which can be time consuming. First we need to list possible entities that may, or not may, be in the Data Field-part of the signal.
+
+### Constants
+
+ * Variable identifiers (data for variable X is always prepended with the constant Y)
+ * Length fields (packet length, length of individual fields in the packet, etc)
+ * Sync words or other "magics" 
+ * Sender identifiers (addresses, serials, hardware or software versions/revisions)
+ * ...
+
+### Variables
+
+ * Timestamps
+ * Things we see on the display
+   * Current power usage seen on the display
+   * Accumulative power consumption seen on the display
+   * Battery life properties
+ * Signal strength/RSSI if we're dealing with a two-way communication protocol
+ * Extra crcs or other hashes
+ * ...
+
+The list goes on an on, but lets start with those elements for now. When identifying element-patterns we need to control the signal being sent as much as possible. Therefore we build this simple led-blinker with an Arduino board. The led is flashing at a predetermined rate which value we can observe on the receiving display. Other things we may consider to do is to hook up the sensor to a voltage cube and vary the input voltage. A third option is to decode signal for different senders which may have different sender properties or identifiers. 
 
 XXX TODO: continue to document the analysis here
