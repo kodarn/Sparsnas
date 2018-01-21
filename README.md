@@ -246,6 +246,6 @@ The list goes on an on, but lets start with those elements for now. When identif
 
 You can find the source code [here](LedBlinkerHelperTool/LedFlasher.ino).
 
-We hook up the Sparsnäs sensor to the red led to the right in the image above. Using the yellow and green push buttons we can increase or decrease the delay between led blinks, allowing us to experiment while running our RfCat on the side.
+We hook up the Sparsnäs sensor to the red led on the right in the image above. Using the yellow and green push buttons we can increase or decrease the delay between led blinks, allowing us to experiment while running our RfCat on the side.
 
 XXX TODO: continue to document the analysis here
