@@ -214,7 +214,7 @@ while True:
                 print  pkt_crc.replace(" ","")
 ```
 
-When we run the script and start to get some data, we quickly identify that the packet contents does not match what is shown on the receiving display. We can therefore conclude that the packet content is scrambled in some way.
+When we run the script and start to get some data, we quickly identify that the packet content does not match what is shown on the receiving display. We can therefore conclude that the packet content is scrambled in some way. However, since the sensor is a small battery powered device with limited compulational resources it is a fair assumption that we're dealing with some kind of simplistic XOR obfuscation of sorts.
 
 ![First attempt to look for patterns in packet content](Docs/17.First.attempt.to.look.for.patterns.in.packet.content.png?raw=true "First attempt to look for patterns in packet content")
 At this point, we know nothing of the internal packet layout, but we can start to identify patterns. This is a creative process which can be time consuming. First we need to list possible entities that may, or not may, be in the Data Field-part of the signal.
@@ -248,4 +248,171 @@ You can find the source code [here](LedBlinkerHelperTool/LedFlasher.ino).
 
 We hook up the Sparsnäs sensor to the red led on the right in the image above. Using the yellow and green push buttons we can increase or decrease the delay between led blinks, allowing us to experiment while running our RfCat on the side.
 
+## Experiment 1: Finding counters
+In the first experiment, we isolerate the sensor in total darkness (using some black electrical tape). Any changing fields would not be related to measured data, but rather counters such as unique packet identifiers, timestamps etc. In this case, we use a sender with ID 400-565-321, and by looking at the hexdump we can identify some patterns. To better view them, we insert spaces to form columns.
+
+```
+ len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
+ 11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
+ 11   49   01 070f a276170e cfa3 8148 47cfa27ed3 6e0e
+ 11   49   02 070e a276170e cfa0 c6b7 47cfa27ed3 be8c
+ 11   49   04 070f a276170e cfa6 6db7 47cfa27ed3 6a3d
+ 11   49   05 070f a276170e cfa7 6877 47cfa27ed3 f9a2
+ 11   49   06 070f a276170e cfa4 6437 47cfa27ed3 4f25
+ 11   49   07 070f a276170e cfa5 60f7 47cfa27ed3 5da9
+ 11   49   08 070f a276170e cfaa 5cb7 47cfa27ed3 302e
+ 11   49   09 070f a276170e cfab 5b77 47cfa27ed3 2192
+ 11   49   0a 070f a276170e cfa8 5737 47cfa27ed3 9715
+ 11   49   0b 070f a276170e cfa9 53f7 47cfa27ed3 8599
+ 11   49   0c 070f a276170e cfae 4fb7 47cfa27ed3 7a1e
+ 11   49   0d 070f a276170e cfaf 4a77 47cfa27ed3 e981
+ 11   49   0e 070f a276170e cfac 4637 47cfa27ed3 5f06
+ 11   49   0f 070f a276170e cfad 42f7 47cfa27ed3 4d8a
+ 11   49   10 070f a276170e cfb2 3eb7 47cfa27ed3 8408
+ 11   49   11 070f a276170e cfb3 3d77 47cfa27ed3 11f7
+ 11   49   12 070f a276170e cfb0 3937 47cfa27ed3 2ff3
+ 11   49   13 070f a276170e cfb1 35f7 47cfa27ed3 b5fc
+ 11   49   14 070f a276170e cfb6 31b7 47cfa27ed3 53fb
+ 11   49   15 070f a276170e cfb7 2c77 47cfa27ed3 d9e4
+ 11   49   16 070f a276170e cfb4 2837 47cfa27ed3 e7e0
+ 11   49   17 070f a276170e cfb5 24f7 47cfa27ed3 7def
+ ..   ..   .. .... ........ .... .... .......... ....
+ ..   ..   .. .... ........ .... .... .......... ....
+ ..   ..   .. .... ........ .... .... .......... ....
+ 11   49   40 070f a276170e cfe2 8ab7 47cfa27ed3 5b53
+ 11   49   41 070f a276170e cfe3 8977 47cfa27ed3 ceac
+ 11   49   42 070f a276170e cfe0 8537 47cfa27ed3 782b
+ 11   49   43 070f a276170e cfe1 81f7 47cfa27ed3 6aa7
+ 11   49   44 070f a276170e cfe6 8177 47cfa27ed3 082f # Column 'Data' becomes stable
+ 11   49   45 070f a276170e cfe7 8177 47cfa27ed3 9e2c
+ 11   49   46 070f a276170e cfe4 8177 47cfa27ed3 a42c
+ 11   49   47 070f a276170e cfe5 8177 47cfa27ed3 322f
+ 11   49   48 070f a276170e cfea 8177 47cfa27ed3 e02f
+ 11   49   49 070f a276170e cfeb 8177 47cfa27ed3 762c
+ ..   ..   .. .... ........ .... .... .......... ....
+ ..   ..   .. .... ........ .... .... .......... ....
+ ..   ..   .. .... ........ .... .... .......... ....
+ 11   49   7a 070f a276170e cfd8 8177 47cfa27ed3 ec26
+ 11   49   7b 070f a276170e cfd9 8177 47cfa27ed3 7a25
+ 11   49   7c 070f a276170e cfde 8177 47cfa27ed3 9826
+ 11   49   7d 070f a276170e cfdf 8177 47cfa27ed3 0e25
+ <this packet (7e) was lost in sniffing>
+ 11   49   7f 070f a276170e cfdd 8177 47cfa27ed3 a226
+ 11   49   00 070f a276170e cf22 8177 47cfa27ed3 5302 # Column 'Cnt' wraps
+ 11   49   01 070f a276170e cf23 8177 47cfa27ed3 c501
+ 11   49   02 070f a276170e cf20 8177 47cfa27ed3 ff01
+ 11   49   03 070f a276170e cf21 8177 47cfa27ed3 6902
+ 11   49   04 070f a276170e cf26 8177 47cfa27ed3 8b01
+ 11   49   05 070f a276170e cf27 8177 47cfa27ed3 1d02
+ 11   49   06 070f a276170e cf24 8177 47cfa27ed3 2702
+ ```
+
+* This experiment results in
+    * Len = This column matches the number of payload bytes. In the Texas Instruments-case, the payload starts with the column after the length column (namely the 'ID' column) and ends where the CRC16 column begins.
+    * ID = The signal analysis we performed in DspectrumGUI (previously) was done using a different sensor. Here we see that the 2nd byte is changed when we're using another sensor. We assume that this is some sort of sensor ID, and therefore name the column 'ID'.
+    * We find what looks like two counters and name them 'Cnt'. 
+        * As for the first, it isn't scrambled and continues to increase until it reaches 0x7F. Then it restarts at 0x00 again.
+        * The second 'Cnt2' is scrambled, and its easily mixed with the column next to it named 'Data'. However, when scrolling down until packet 0x45, we see that the 'Data' column stablizes at '8177'. This makes it very likely we're dealing with two seperate columns.
+    * The remaining columns contain fixed values and we leave them as is (for now).
+    * Another important finding:
+        * Power-cycling the sensors' battery, will make the sequences repeat *exactly* as the previous testrun.
+        -> This makes our analysis much more doable.
+
+* We concluded earlier that it is likely that we're dealing with some sort of XOR-obfuscation. Therefore; it is a good time to review the characteristics of the XOR-operation (denoted with the ^ character). Some handy facts:
+
+    * Fact 01: Any byte ^ 0x00 will result in the original value. That is, 0xAA ^ 0x00 = 0xAA. We can use this fact when identifying counters which starts from zero and then increases. Lets say we have a 32-bit counter (i.e. 4 bytes) which we find it reasonbly that is starts from zero, but is XOR'ed with an unknown key:
+
+    | Packet ID  | Clear text before send | XOR'ed data read in the air  |
+    | ---------- |:----------------------:| -----:|
+    | packet 01  | 00 00 00 00 | 11 22 33 44 |
+    | packet 02  | 00 00 00 01 | 11 22 33 45 |
+    | packet 03  | 00 00 00 02 | 11 22 33 46 |
+    | packet 04  | 00 00 00 03 | 11 22 33 47 |
+    | packet 05  | 00 00 00 04 | 11 22 33 40 |
+
+    * Knowning that a number xor'ed with 0x00 results in the original value, we can conclude that the uknown XOR-key for the packets above is 11 22 33 44.
+
+    * Fact 02: How XOR works when dealing with increasing value series in relation to each other. Concider the following set of values:
+```
+    | Packet ID  | In the air  | Packet 01 XOR with Packet 0* | Packet 01   ^ Current Val = Unscrambled Cnt
+    | ---------- |:-----------:| ----------------------------:| -------------------------------------------
+    | packet 01  | 11 22 33 44 | --+--+--+--+                 | 11 22 33 44 ^ 11 22 33 44 = 00 00 00 00
+    | packet 02  | 11 22 33 45 | <-+  |  |  |                 | 11 22 33 44 ^ 11 22 33 45 = 00 00 00 01
+    | packet 03  | 11 22 33 46 | <----+  |  |                 | 11 22 33 44 ^ 11 22 33 46 = 00 00 00 02
+    | packet 04  | 11 22 33 47 | <-------+  |                 | 11 22 33 44 ^ 11 22 33 47 = 00 00 00 03
+    | packet 05  | 11 22 33 40 | <----------+                 | 11 22 33 44 ^ 11 22 33 48 = 00 00 00 04
+```
+    * In counter series starting with *zero*, xor'ing the start value with the following elements, results in the counter sequence in clear text.
+    * 
+
+### Applying what we now know about XOR to our own data
+
+Lets assume that the 'Cnt2' counter starts at 0x000. To verify this assumption we do the following operation. Xor the starting value with each following value in the column and see what we get:
+
+```
+ len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
+ 11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
+ 11   49   01 070f a276170e cfa3 8148 47cfa27ed3 6e0e
+ 11   49   02 070e a276170e cfa0 c6b7 47cfa27ed3 be8c
+ 11   49   04 070f a276170e cfa6 6db7 47cfa27ed3 6a3d
+ ..   ..   .. .... ........ .... .... .......... ....
+ 
+  cfa2 ^ cfa2 = 0000
+  cfa2 ^ cfa3 = 0001
+  cfa2 ^ cfa0 = 0002
+  cfa2 ^ cfa6 = 0003
+  .... ^ .... = ....
+
+  Great, it looks like our assumption is valid. The XOR key for
+  those two bytes in the 'Cnt2' colum is definitly 'cfa2'.
+```
+
+### Look for repetitions in the XOR-data
+
+We now know that given the value of zero, the xor-key *at some positions* in the dataset is 'cfa2'. But if we're lucky, there can be other columns which also begins with the value of zero, but isn't counters. Lets concider the top row:
+
+```
+ len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
+ 11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
+
+ Can we detect the 'cfa2'-sequence anywhere else? 
+```
+Well, yes, we have one hit in the last 'Fixed' column. If we now make the following assumptions:
+    * That column (at least at those positions) also starts with 0x000.
+    * Repeating sequencies indicates a rolling XOR-key, where we have a shorter key compared to the longer data to be scrambled.
+
+Lets measure the byte-distance:
+```
+ len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
+ 11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
+                            ____ ____ __
+
+We seem to have 5 bytes before the values repeat. If our assumptions are correct, this means that we have a 5-byte long XOR-key.
+```
+
+Lets measure if a 5-byte XOR-key would go fit into the packet. We saw in the long packet dump above, that the three first columns (Len, ID, Cnt) was most likely in clear text. So, the scrambled data begins with the first 'Fix' column and ends where the Crc16 begins. Attempt to fit a 5-byte XOR-key based on that:
+```
+ len  ID  Cnt Fix Fixed   Cnt2DataFixed      Crc16
+ 11   49   00 070fa276170ecfa2814847cfa27ed3 f80d
+              |-5-byte-||-5-byte-||-5-byte-|
+
+It aligns perfectly, which strengthens our assumption.
+```
+
+The assumption is now that we have the following XOR-key: ??cfa2???? 
+
+## Experiment 2: Controlling input data
+Next up is to use our Arduino-based "Led blink helper tool" we built earlier to see what happens to the columns. We remove the black electrical tape and attach the sensor to the led on the bredboard. Looking at the packet dump above we can very easily conclude that the sensor sends one packet every 15'th second. If we configure our helper-tool to blink once every minute, we would have four packets per blink. Lets try that:
+
+
+
+
 XXX TODO: continue to document the analysis here
+
+
+
+Ideas for the future
+* Connect a logic analyzer on the sender to retrieve the CC115L settings sent from the microcontroller.
+* Connect a programmer to the microcontroller and see if we can dump the flash memory.
+
+
