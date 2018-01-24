@@ -1,5 +1,5 @@
 # Sparsnas
-Various projects on the IKEA Sparsnäs energy monitor
+Note: This is work in progress and content may change at any time.
 
 # Radio Signal Analysis
 This section describes how to decode the radio transmission.
@@ -249,6 +249,7 @@ You can find the source code [here](LedBlinkerHelperTool/LedFlasher.ino).
 We hook up the Sparsnäs sensor to the red led on the right in the image above. Using the yellow and green push buttons we can increase or decrease the delay between led blinks, allowing us to experiment while running our RfCat on the side.
 
 ## Experiment 1: Finding counters
+![Experiment 1](Docs/Experiment1.jpg?raw=true "Experiment 1")
 In the first experiment, we isolate the sensor in total darkness (using some black electrical tape). Any changing fields would not be related to measured data, but rather counters such as unique packet identifiers, timestamps etc. In this case, we use a sender with ID 400-565-321, and by looking at the hexdump we can identify some patterns. To better view them, we insert spaces to form columns.
 
 ```
@@ -402,6 +403,7 @@ It aligns perfectly, which strengthens our assumption.
 The assumption is now that we have the following XOR-key: ??cfa2???? 
 
 ## Experiment 2: Controlling input data
+![Experiment 2](Docs/Experiment2.jpg?raw=true "Experiment 2")
 Next up is to use our Arduino-based "Led blink helper tool" we built earlier to see what happens to the columns. We remove the black electrical tape and attach the sensor to the led on the breadboard. Looking at the packet dump above we can very easily conclude that the sensor sends one packet every 15'th second. If we configure our helper-tool to blink once every minute, we would have four packets per blink. (To reduce space I have removed duplicate 'NewCnt' packets. Thats why the 'Cnt' column isn't sequential.)
 
 ```
