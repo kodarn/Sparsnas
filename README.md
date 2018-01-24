@@ -19,7 +19,7 @@ XXX TODO: insert photo of them here
 Second, you need some software to record the signal. You will find any alternatives ranging from simple commandline apps to more advanced guis. The Ikea Sparsnäs sends a signal on the 868 MHz band, and here are a few alternatives to record on that band.
 
 ```
-rtl_sdr -f 868000000 -s 1024000 -g 40 > outfile.cu8
+rtl_sdr -f 868000000 -s 1024000 -g 40 - > outfile.cu8
 
 hackrf_transfer -r outfile.cs8 -f 868000000 -s 2000000
 
@@ -214,7 +214,7 @@ while True:
                 print  pkt_crc.replace(" ","")
 ```
 
-When we run the script and start to get some data, we quickly identify that the packet content does not match what is shown on the receiving display. We can therefore conclude that the packet content is scrambled in some way. However, since the sensor is a small battery powered device with limited compulational resources it is a fair assumption that we're dealing with some kind of simplistic XOR obfuscation of sorts.
+When we run the script and start to get some data, we quickly identify that the packet content does not match what is shown on the receiving display. We can therefore conclude that the packet content is scrambled in some way. However, since the sensor is a small battery powered device with limited computational resources it is a fair assumption that we're dealing with some kind of simplistic XOR obfuscation of sorts.
 
 ![First attempt to look for patterns in packet content](Docs/17.First.attempt.to.look.for.patterns.in.packet.content.png?raw=true "First attempt to look for patterns in packet content")
 At this point, we know nothing of the internal packet layout, but we can start to identify patterns. This is a creative process which can be time consuming. First we need to list possible entities that may, or not may, be in the Data Field-part of the signal.
@@ -238,7 +238,7 @@ At this point, we know nothing of the internal packet layout, but we can start t
  * Extra crc's or other hashes
  * etc
 
-The list goes on an on, but lets start with those elements for now. When identifying element-patterns we need to control the signal being sent as much as possible. Therefore we build a simple led-blinker with an Arduino board. The led is flashing at a predetermined rate which we control. Knowing the stable flash rate we can observe what kWh they translate into on the receiving display. This is a good starting point for our analysis. Other things we may consider is to hook up the sensor to a voltage cube and vary the transmitters battery voltage. A third option is to purchase several Sparsnäs devices, and decode signals from the different senders which may have different sender properties or identifiers. 
+The list goes on an on, but lets start with those elements for now. When identifying element-patterns we need to control the signal being sent as much as possible. Therefore we build a simple led-blinker with an Arduino board. The led is flashing at a predetermined rate which we control. Knowing the stable flash rate we can observe what kWh they translate into on the receiving display. This is a good starting point for our analysis. Other things we may consider could be to hook up the sensor to a voltage cube and vary the transmitters battery voltage. A third option is to purchase several Sparsnäs devices, and decode signals from the different senders which may have different sender properties or identifiers. 
 
 ## Led blink helper tool
 <img src="LedBlinkerHelperTool/LedFlasher.png"  width="200" />
@@ -249,7 +249,7 @@ You can find the source code [here](LedBlinkerHelperTool/LedFlasher.ino).
 We hook up the Sparsnäs sensor to the red led on the right in the image above. Using the yellow and green push buttons we can increase or decrease the delay between led blinks, allowing us to experiment while running our RfCat on the side.
 
 ## Experiment 1: Finding counters
-In the first experiment, we isolerate the sensor in total darkness (using some black electrical tape). Any changing fields would not be related to measured data, but rather counters such as unique packet identifiers, timestamps etc. In this case, we use a sender with ID 400-565-321, and by looking at the hexdump we can identify some patterns. To better view them, we insert spaces to form columns.
+In the first experiment, we isolate the sensor in total darkness (using some black electrical tape). Any changing fields would not be related to measured data, but rather counters such as unique packet identifiers, timestamps etc. In this case, we use a sender with ID 400-565-321, and by looking at the hexdump we can identify some patterns. To better view them, we insert spaces to form columns.
 
 ```
  len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
@@ -312,7 +312,7 @@ In the first experiment, we isolerate the sensor in total darkness (using some b
     * ID = The signal analysis we performed in DspectrumGUI (previously) was done using a different sensor. Here we see that the 2nd byte is changed when we're using another sensor. We assume that this is some sort of sensor ID, and therefore name the column 'ID'.
     * We find what looks like two counters and name them 'Cnt'. 
         * As for the first, it isn't scrambled and continues to increase until it reaches 0x7F. Then it restarts at 0x00 again.
-        * The second 'Cnt2' is scrambled, and its easily mixed with the column next to it named 'Data'. However, when scrolling down until packet 0x45, we see that the 'Data' column stablizes at '8177'. This makes it very likely we're dealing with two seperate columns.
+        * The second 'Cnt2' is scrambled, and its easily mixed with the column next to it named 'Data'. However, when scrolling down until packet 0x45, we see that the 'Data' column stabillizes at '8177'. This makes it very likely we're dealing with two separate columns.
     * The remaining columns contain fixed values and we leave them as is (for now).
     * Another important finding:
         * Power-cycling the sensors' battery, will make the sequences repeat *exactly* as the previous testrun.
@@ -320,7 +320,7 @@ In the first experiment, we isolerate the sensor in total darkness (using some b
 
 * We concluded earlier that it is likely that we're dealing with some sort of XOR-obfuscation. Therefore; it is a good time to review the characteristics of the XOR-operation (denoted with the ^ character). Some handy facts:
 
-    * Fact 01: Any byte ^ 0x00 will result in the original value. That is, 0xAA ^ 0x00 = 0xAA. We can use this fact when identifying counters which starts from zero and then increases. Lets say we have a 32-bit counter (i.e. 4 bytes) which we find it reasonbly that is starts from zero, but is XOR'ed with an unknown key:
+    * Fact 01: Any byte ^ 0x00 will result in the original value. That is, 0xAA ^ 0x00 = 0xAA. We can use this fact when identifying counters which starts from zero and then increases. Lets say we have a 32-bit counter (i.e. 4 bytes) which we find it reasonably that is starts from zero, but is XOR'ed with an unknown key:
 
     | Packet ID  | Clear text before send | XOR'ed data read in the air  |
     | ---------- |:----------------------:| -----:|
@@ -330,9 +330,9 @@ In the first experiment, we isolerate the sensor in total darkness (using some b
     | packet 04  | 00 00 00 03 | 11 22 33 47 |
     | packet 05  | 00 00 00 04 | 11 22 33 40 |
 
-    * Knowning that a number xor'ed with 0x00 results in the original value, we can conclude that the uknown XOR-key for the packets above is 11 22 33 44.
+    * Knowing that a number xor'ed with 0x00 results in the original value, we can conclude that the unknown XOR-key for the packets above is 11 22 33 44.
 
-    * Fact 02: How XOR works when dealing with increasing value series in relation to each other. Concider the following set of values:
+    * Fact 02: How XOR works when dealing with increasing value series in relation to each other. Consider the following set of values:
 ```
     | Packet ID  | In the air  | Packet 01 XOR with Packet 0* | Packet 01   ^ Current Val = Unscrambled Cnt
     | ---------- |:-----------:| ----------------------------:| -------------------------------------------
@@ -369,7 +369,7 @@ Lets assume that the 'Cnt2' counter starts at 0x000. To verify this assumption w
 
 ### Look for repetitions in the XOR-data
 
-We now know that given the value of zero, the xor-key *at some positions* in the dataset is 'cfa2'. But if we're lucky, there can be other columns which also begins with the value of zero, but isn't counters. Lets concider the top row:
+We now know that given the value of zero, the xor-key *at some positions* in the dataset is 'cfa2'. But if we're lucky, there can be other columns which also begins with the value of zero, but isn't counters. Lets consider the top row:
 
 ```
  len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
@@ -379,7 +379,7 @@ We now know that given the value of zero, the xor-key *at some positions* in the
 ```
 Well, yes, we have one hit in the last 'Fixed' column. If we now make the following assumptions:
     * That column (at least at those positions) also starts with 0x000.
-    * Repeating sequencies indicates a rolling XOR-key, where we have a shorter key compared to the longer data to be scrambled.
+    * Repeating sequences indicates a rolling XOR-key, where we have a shorter key compared to the longer data to be scrambled.
 
 Lets measure the byte-distance:
 ```
@@ -402,17 +402,38 @@ It aligns perfectly, which strengthens our assumption.
 The assumption is now that we have the following XOR-key: ??cfa2???? 
 
 ## Experiment 2: Controlling input data
-Next up is to use our Arduino-based "Led blink helper tool" we built earlier to see what happens to the columns. We remove the black electrical tape and attach the sensor to the led on the bredboard. Looking at the packet dump above we can very easily conclude that the sensor sends one packet every 15'th second. If we configure our helper-tool to blink once every minute, we would have four packets per blink. Lets try that:
+Next up is to use our Arduino-based "Led blink helper tool" we built earlier to see what happens to the columns. We remove the black electrical tape and attach the sensor to the led on the breadboard. Looking at the packet dump above we can very easily conclude that the sensor sends one packet every 15'th second. If we configure our helper-tool to blink once every minute, we would have four packets per blink. (To reduce space I have removed duplicate 'NewCnt' packets. Thats why the 'Cnt' column isn't sequential.)
 
+```
+Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
+ 11 49 00 070f a276170e cfa2 8148 47cfa27e d3 f80d
+ 11 49 02 070e a276170e cfa0 c6b7 47cfa27e d3 be8c
+ 11 49 04 070e a276170e cfa6 99eb 47cfa27f d3 b625
+ 11 49 08 070e a276170e cfaa 916f 47cfa27c d3 bc2b
+ 11 49 0d 070e a276170e cfaf 8ef3 47cfa27d d3 4a4d
+ 11 49 0f 070e a276170e cfad 9129 47cfa27a d3 5a6a
+ 11 49 19 070e a276170e cfbb 917d 47cfa278 d3 223c
+ 11 49 1b 070e a276170e cfb9 9179 47cfa279 d3 e83a
+ 11 49 22 070e a276170e cf80 9161 47cfa276 d3 0c2b
+ 11 49 24 070e a276170e cf86 9167 47cfa277 d3 6e2d
+ 11 49 27 070e a276170e cf85 9161 47cfa274 d3 ce28
+ 11 49 2c 070e a276170e cf8e 914d 47cfa275 d3 6206
+ 11 49 31 070e a276170e cf93 8ecf 47cfa272 d3 807b
+ 11 49 33 070e a276170e cf91 9117 47cfa273 d3 f45f
+ 11 49 37 070e a276170e cf95 8e83 47cfa270 d3 5830
+ 11 49 3b 070e a276170e cf99 9101 47cfa271 d3 5848
+```
+
+### Initial observations
+* The firsted fixed column is now 070e instead of 070f. This could be a status-field which indicates that the sensor is receiving led-blinks. One could speculate that either 070e or 070f represents a TRUE/FALSE value.
+* The 'NewCnt' and the following value d3 seems to be different columns, since d3 is constant and NewCnt behaves like a 32-bit counter, so we space them apart.
 
 
 
 XXX TODO: continue to document the analysis here
 
-
-
-Ideas for the future
-* Connect a logic analyzer on the sender to retrieve the CC115L settings sent from the microcontroller.
-* Connect a programmer to the microcontroller and see if we can dump the flash memory.
+# Ideas for the future
+* Connect a logic analyzer on the sender to retrieve the CC115L settings sent from the micro-controller.
+* Connect a programmer to the micro-controller and see if we can dump the flash memory.
 
 
