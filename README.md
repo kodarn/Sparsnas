@@ -494,13 +494,13 @@ The first and last values (17 & d3) have been static during our whole analysis s
   * Crc16  - The standard Texas Instruments Crc16
 
 ### Figuring out the last byte in the XOR-key
-Lets take a step back and reason a little bit. The only two columns which are changed relative to led blinks are 'Data' and 'NewCnt'. That means they are the only two columns which can affect the Watt-value printed one the receiving display. Now, the 'NewCnt' column just measure the total amounts of led blinks. However, the receiving display also shows the *current* power usage in Watts. We should look into the theory of how that works. Infact, this is commonly described as the process of converting led impulses to Watts in modern domestic electricity consumption and microgeneration meters.
+Lets take a step back and reason a little bit. The only two columns which are changed relative to led blinks are 'Data' and 'NewCnt'. That means they are the only two columns which can affect the Watt-value printed on the receiving display. Now, the 'NewCnt' column only measures the total amounts of led blinks. However, the receiving display also shows the *current* power usage in Watts. We should look into the theory of how that works. Infact, this is commonly described as the process of converting led impulses to Watts in modern domestic electricity consumption and microgeneration meters.
 
 XXX TODO: Insert math theory here
 watts = watt-hours / hours = watt-hours / (seconds / 3600 ) = watt-hours * 3600 / seconds
 
 ### Default value assumption
-Our test-unscramble operation above we received the following result:
+In our test-unscramble operation above we received the following result:
 
 ```
     Data column: 8148
@@ -512,7 +512,7 @@ When we see FF as the highbyte, we can start to reason. We know the lowbyte must
 
 How do we figure out the XOR-key? Well, this is what we're asking: 48 ^ ?? = FF  which in XOR-math translates into ?? = 48 ^ FF, which in turn equals B7. 
 
-How do we verify this XOR-key? Well, lets capture some data. When we receive a packet look at the values on the receiving display and write them down. Also, we speed up the blink-rate on the Arduino-connected led to one blink per second in order to get more dynamic values. Here's some random selected lines:
+How do we verify this XOR-key? Well, lets capture some data. When we receive a packet look at the values on the receiving display and write them down. Also, we speed up the blink-rate on the Arduino-connected led to one blink per second in order to get more dynamic values. Here's a few selected lines:
 
 ```
 Len ID Cnt Fix Fixed    PCnt Data NewCnt     Crc16     Data ^ Key           Watt on display
