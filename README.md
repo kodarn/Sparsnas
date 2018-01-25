@@ -433,6 +433,8 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
 Now lets pull the battery out and put it back in again. The interesting thing is to determine whether any values are persistent over the power cycle, or if they are being reset back to default values. At the same time, we take our assumption of a 5-byte XOR-key length into account. Watch what happens:
 
 ```
+First captured packet after power cycling:
+
 Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
  11 49 00 070f a276170e cfa2 8148 47cfa27e d3 f80d
           |-5-bytes-||--5-bytes-| |-5-bytes-|
@@ -459,10 +461,73 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16      Xor-Key      NewCnt    
  11 49 3b 070e a276170e cf99 9101 47cfa271 d3 5848     # 47cfa27e  ^  47cfa271  = 0000000F
 ```
 
-Well, what a nice counter! Thus, we can conclude the XOR-key being:
+Well, what a nice counter! Thus, we can (with some certainty) conclude the XOR-key being:
 ```
     47 cf a2 7e ??
 ```
+Now we only need to figure out the last byte. The bytes affected by the missing XOR-byte are:
+
+```
+Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
+ 11 49 00 070f a276170e cfa2 8148 47cfa27e d3 f80d
+                   ^^          ^^          ^^
+          |-5-bytes-||--5-bytes-| |-5-bytes-|
+
+Testing an unscramble operation by XOR'ing the first packet with the assumed XOR-key:
+
+Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
+ 11 49 00 070f a276170e cfa2 8148 47cfa27e d3 f80d
+          47cf a27e??47 cfa2 7e?? 47cfa27e ??
+ -------------------------------------------------
+          40C0 0008??49 0000 FF?? 47cfa27e ??
+```
+The first and last values (17 & d3) have been static during our whole analysis so far. This makes them very dificult to work with. However, the byte in the middle column 'Data', with the value of 48, has been fluctuating since we started feeding the sensor with led blinks. If we could figure out what this column is used for, perhaps we can solve it. Let summarize what we assumed (and partially have know) so far:
+  * Len    - Length of payload bytes, starting with column Fix (070f) and ending befire the Crc16
+  * ID     - Seems to be a sender ID of some sort
+  * Cnt    - A 8-bit packet counter, wrapping at 0x7F (which makes it 7-bits acutally)
+  * Fix    - Some sort of flag/status column with true/false like properies stating if the sensor is detecting any blinks.
+  * Fixed  - 5 bytes of static data. At present, it is hard to make something of it. (See note on 'PCnt' column description.)
+  * PCnt   - A 16-bit packet counter.
+  * Data   - Only modified when we prove led blinks, so it should have something to do with the measurement process.
+  * NewCnt - A 32-bit led blink counter. Increases by one for every blink.
+  * d3     - At present, it is hard to make something of it.
+  * Crc16  - The standard Texas Instruments Crc16
+
+### Figuring out the last byte in the XOR-key
+Lets take a step back and reason a little bit. The only two columns which are changed relative to led blinks are 'Data' and 'NewCnt'. That means they are the only two columns which can affect the Watt-value printed one the receiving display. Now, the 'NewCnt' column just measure the total amounts of led blinks. However, the receiving display also shows the *current* power usage in Watts. We should look into the theory of how that works. Infact, this is commonly described as the process of converting led impulses to Watts in modern domestic electricity consumption and microgeneration meters.
+
+XXX TODO: Insert math theory here
+watts = watt-hours / hours = watt-hours / (seconds / 3600 ) = watt-hours * 3600 / seconds
+
+### Default value assumption
+Our test-unscramble operation above we received the following result:
+
+```
+    Data column: 8148
+    XOR-key:     7e??
+                 ----
+                 FF??
+```
+When we see FF as the highbyte, we can start to reason. We know the lowbyte must be somewhere between 00 & FF, right? FFFF would translate into -1 in decimal form, which would be a plausable intialization value. Other values, such as FF00, translates into  -256 (or 65280) which may be valid but seems less likely. So we start with and assumption that the Data column starts with the unscrambled value of 0xFFFF.
+
+How do we figure out the XOR-key? Well, this is what we're asking: 48 ^ ?? = FF  which in XOR-math translates into ?? = 48 ^ FF, which in turn equals B7. 
+
+How do we verify this XOR-key? Well, lets capture some data. When we receive a packet look at the values on the receiving display and write them down. Also, we speed up the blink-rate on the Arduino-connected led to one blink per second in order to get more dynamic values. Here's some random selected lines:
+
+```
+Len ID Cnt Fix Fixed    PCnt Data NewCnt     Crc16     Data ^ Key           Watt on display
+--- -- -- ---- -------- ---- ---- ---------- ----      ------------------   ---------------
+ 11 49 1e 070e a276170e cfbc 7aa5 47cfa3aed3 9143    # 7aa5 ^ 7EB7 = 0412   3537
+ 11 49 24 070e a276170e cf86 7aa3 47cfa054d3 a17f    # 7aa3 ^ 7EB7 = 0414   3531
+ 11 49 45 070e a276170e cfe7 7aa7 47cfa667d3 bd13    # 7aa7 ^ 7EB7 = 0410   3544
+```
+
+XXX TODO: Insert some photos here
+
+XXX TODO: Write the finish of using these values in the formulas above to verify our assumption.
+
+
+
 
 
 XXX TODO: continue to document the analysis here
