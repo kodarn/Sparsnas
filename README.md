@@ -344,7 +344,6 @@ In the first experiment, we isolate the sensor in total darkness (using some bla
     | packet 05  | 11 22 33 40 | <----------+                 | 11 22 33 44 ^ 11 22 33 48 = 00 00 00 04
 ```
     * In counter series starting with *zero*, xor'ing the start value with the following elements, results in the counter sequence in clear text.
-    * 
 
 ### Applying what we now know about XOR to our own data
 
@@ -430,6 +429,40 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
 * The firsted fixed column is now 070e instead of 070f. This could be a status-field which indicates that the sensor is receiving led-blinks. One could speculate that either 070e or 070f represents a TRUE/FALSE value.
 * The 'NewCnt' and the following value d3 seems to be different columns, since d3 is constant and NewCnt behaves like a 32-bit counter, so we space them apart.
 
+### Power cycling
+Now lets pull the battery out and put it back in again. The interesting thing is to determine whether any values are persistent over the power cycle, or if they are being reset back to default values. At the same time, we take our assumption of a 5-byte XOR-key length into account. Watch what happens:
+
+```
+Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
+ 11 49 00 070f a276170e cfa2 8148 47cfa27e d3 f80d
+          |-5-bytes-||--5-bytes-| |-5-bytes-|
+```
+The first packet is identical to the one previous to the power cycling. Now, having determined that the 'NewCnt' column is a counter, and its being reset on boot, we can make the assumtion that NewCnt starts with the value zero. We can test if this assumption is reasonably.
+Remember what we stated in "Fact 01" earlier, that is, 0xAA ^ 0x00 = 0xAA. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value 'd3' remains to be figured out. Enough, lets test our assumption:
+
+```
+Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16      Xor-Key      NewCnt      Result
+ 11 49 00 070f a276170e cfa2 8148 47cfa27e d3 f80d     # 47cfa27e  ^  47cfa27e  = 00000000 
+ 11 49 04 070e a276170e cfa6 99eb 47cfa27f d3 b625     # 47cfa27e  ^  47cfa27f  = 00000001
+ 11 49 08 070e a276170e cfaa 916f 47cfa27c d3 bc2b     # 47cfa27e  ^  47cfa27c  = 00000002
+ 11 49 0d 070e a276170e cfaf 8ef3 47cfa27d d3 4a4d     # 47cfa27e  ^  47cfa27d  = 00000003
+ 11 49 0f 070e a276170e cfad 9129 47cfa27a d3 5a6a     # 47cfa27e  ^  47cfa27a  = 00000004
+ 11 49 19 070e a276170e cfbb 917d 47cfa278 d3 223c     # 47cfa27e  ^  47cfa278  = 00000006
+ 11 49 1b 070e a276170e cfb9 9179 47cfa279 d3 e83a     # 47cfa27e  ^  47cfa279  = 00000007
+ 11 49 22 070e a276170e cf80 9161 47cfa276 d3 0c2b     # 47cfa27e  ^  47cfa276  = 00000008
+ 11 49 24 070e a276170e cf86 9167 47cfa277 d3 6e2d     # 47cfa27e  ^  47cfa277  = 00000009
+ 11 49 27 070e a276170e cf85 9161 47cfa274 d3 ce28     # 47cfa27e  ^  47cfa274  = 0000000A
+ 11 49 2c 070e a276170e cf8e 914d 47cfa275 d3 6206     # 47cfa27e  ^  47cfa275  = 0000000B
+ 11 49 31 070e a276170e cf93 8ecf 47cfa272 d3 807b     # 47cfa27e  ^  47cfa272  = 0000000C
+ 11 49 33 070e a276170e cf91 9117 47cfa273 d3 f45f     # 47cfa27e  ^  47cfa273  = 0000000D
+ 11 49 37 070e a276170e cf95 8e83 47cfa270 d3 5830     # 47cfa27e  ^  47cfa270  = 0000000E
+ 11 49 3b 070e a276170e cf99 9101 47cfa271 d3 5848     # 47cfa27e  ^  47cfa271  = 0000000F
+```
+
+Well, what a nice counter! Thus, we can conclude the XOR-key being:
+```
+    47 cf a2 7e ??
+```
 
 
 XXX TODO: continue to document the analysis here
