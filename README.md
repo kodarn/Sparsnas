@@ -380,6 +380,7 @@ We now know that given the value of zero, the xor-key *at some positions* in the
  Can we detect the 'cfa2'-sequence anywhere else? 
 ```
 Well, yes, we have one hit in the last 'Fixed' column. If we now make the following assumptions:
+
     * That column (at least at those positions) also starts with 0x000.
     * Repeating sequences indicates a rolling XOR-key, where we have a shorter key compared to the longer data to be scrambled.
 
@@ -387,12 +388,13 @@ Lets measure the byte-distance:
 ```
  len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
  11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
-                            ____ ____ __
+                           >---- ---- --<
 
-We seem to have 5 bytes before the values repeat. If our assumptions are correct, this means that we have a 5-byte long XOR-key.
+We seem to have 5 bytes before the values repeat. If our assumptions are correct,
+it means we have a 5-byte long XOR-key.
 ```
 
-Lets measure if a 5-byte XOR-key would go fit into the packet. We saw in the long packet dump above, that the three first columns (Len, ID, Cnt) was most likely in clear text. So, the scrambled data begins with the first 'Fix' column and ends where the Crc16 begins. Attempt to fit a 5-byte XOR-key based on that:
+Lets measure if a 5-byte XOR-key would go fit into the packet. We saw in the long packet dump above, that the three first columns (i.e. Len, ID, Cnt) was most likely in clear text. So, the scrambled data begins with the first 'Fix' column and ends where the Crc16 begins. Attempt to fit a 5-byte XOR-key based on that:
 ```
  len  ID  Cnt Fix Fixed   Cnt2DataFixed      Crc16
  11   49   00 070fa276170ecfa2814847cfa27ed3 f80d
@@ -405,7 +407,7 @@ The assumption is now that we have the following XOR-key: ??cfa2????
 
 ## Experiment 2: Controlling input data
 ![Experiment 2](Docs/Experiment2.jpg?raw=true "Experiment 2")
-Next up is to use our Arduino-based "Led blink helper tool" we built earlier to see what happens to the columns. We remove the black electrical tape and attach the sensor to the led on the breadboard. Looking at the packet dump above we can very easily conclude that the sensor sends one packet every 15'th second. If we configure our helper-tool to blink once every minute, we would have four packets per blink. (To reduce space I have removed duplicate 'NewCnt' packets. Thats why the 'Cnt' column isn't sequential.)
+Next up is to use our Arduino-based "Led blink helper tool" we built earlier. We remove the black electrical tape and attach the sensor to the led on the breadboard. Looking at the packet dump above we can very easily conclude that the sensor sends one packet every 15'th second. If we configure our helper-tool to blink once every minute, we would have four packets per blink. (To reduce space I have removed duplicate 'NewCnt' packets. Thats why the 'Cnt' column isn't sequential.)
 
 ```
 Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
@@ -569,7 +571,7 @@ Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
  11 49 00 070f    a276170e cfa2 8148 47cfa27e d3 f80d   <--- Packet data
           47cf    a27eb747 cfa2 7eb7 47cfa27e b7        <--- XOR key
  -------------------------------------------------
-          40C0    0008A049 0000 FFFF 47cfa27e 64        <--- Unscrambled result
+          40C0    0008A049 0000 FFFF 00000000 64        <--- Unscrambled result
 ```
 
   * Len     - Length of payload bytes, starting with column Fix (070f) and ending befire the Crc16
@@ -582,6 +584,12 @@ Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
   * PulseCnt - A 32-bit led blink counter. Increases by one for every blink.
   * d3      - At present, it is hard to make something of it.
   * Crc16   - The standard Texas Instruments Crc16
+
+![Decoder using RfCat](Receiver.using.RfCat/sparsnas_rfcat.jpg?raw=true "Decoder using RfCat")
+
+The source code can be found [here](Receiver.using.RfCat/sparsnas_rfcat.py).
+
+
 
 # Ideas for the future
 * Build a hardware receiver using a CC1101
