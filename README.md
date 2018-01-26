@@ -217,6 +217,8 @@ while True:
 When we run the script and start to get some data, we quickly identify that the packet content does not match what is shown on the receiving display. We can therefore conclude that the packet content is scrambled in some way. However, since the sensor is a small battery powered device with limited computational resources it is a fair assumption that we're dealing with some kind of simplistic XOR obfuscation of sorts.
 
 ![First attempt to look for patterns in packet content](Docs/17.First.attempt.to.look.for.patterns.in.packet.content.png?raw=true "First attempt to look for patterns in packet content")
+
+# Packet content Analysis
 At this point, we know nothing of the internal packet layout, but we can start to identify patterns. This is a creative process which can be time consuming. First we need to list possible entities that may, or not may, be in the Data Field-part of the signal.
 
 ### Constants
@@ -496,8 +498,13 @@ The first and last values (17 & d3) have been static during our whole analysis s
 ### Figuring out the last byte in the XOR-key
 Lets take a step back and reason a little bit. The only two columns which are changed relative to led blinks are 'Data' and 'NewCnt'. That means they are the only two columns which can affect the Watt-value printed on the receiving display. Now, the 'NewCnt' column only measures the total amounts of led blinks. However, the receiving display also shows the *current* power usage in Watts. We should look into the theory of how that works. Infact, this is commonly described as the process of converting led impulses to Watts in modern domestic electricity consumption and microgeneration meters.
 
-XXX TODO: Insert math theory here
-watts = watt-hours / hours = watt-hours / (seconds / 3600 ) = watt-hours * 3600 / seconds
+There are numerous projects out there describing the mathematics in detail, so we'll keep it short here. 
+
+![Convert impulses to Watt](Docs/ConvertImpulsesToWatt.png?raw=true "Convert impulses to Watt")
+
+Example: If the LED flashes once every 5.2 seconds on a meter labelled 800 kWh, the power going through the meter at that time will be 3600 / (5.2 * 800) = 0.865 kW. If we want Watt instead of kW, we multiply by 1024 which yields (3600 * 1024) / (5.2 * 800) = 886 Watt.
+
+With this in mind, we can make an assumption that the 'Data' column should contain the timing information in the fraction-denominator in some form. But to get to this, we first need to figure out the last byte in the XOR-key.
 
 ### Default value assumption
 In our test-unscramble operation above we received the following result:
@@ -510,29 +517,75 @@ In our test-unscramble operation above we received the following result:
 ```
 When we see FF as the highbyte, we can start to reason. We know the lowbyte must be somewhere between 00 & FF, right? FFFF would translate into -1 in decimal form, which would be a plausable intialization value. Other values, such as FF00, translates into  -256 (or 65280) which may be valid but seems less likely. So we start with and assumption that the Data column starts with the unscrambled value of 0xFFFF.
 
-How do we figure out the XOR-key? Well, this is what we're asking: 48 ^ ?? = FF  which in XOR-math translates into ?? = 48 ^ FF, which in turn equals B7. 
+How do we figure out the XOR-key value? Well, this is what we're asking: 48 ^ ?? = FF  which in XOR-math translates into ?? = 48 ^ FF, which in turn equals B7. 
 
-How do we verify this XOR-key? Well, lets capture some data. When we receive a packet look at the values on the receiving display and write them down. Also, we speed up the blink-rate on the Arduino-connected led to one blink per second in order to get more dynamic values. Here's a few selected lines:
+How do we verify this XOR-key? Well, let us capture some data and investigate it. When we receive a packet, pay attention to the values on the receiving display and write them down. We speed up the blink-rate on the Arduino-connected led to one blink per second in order to get more dynamic values. Here's a few selected lines:
 
 ```
-Len ID Cnt Fix Fixed    PCnt Data NewCnt     Crc16     Data ^ Key           Watt on display
---- -- -- ---- -------- ---- ---- ---------- ----      ------------------   ---------------
- 11 49 1e 070e a276170e cfbc 7aa5 47cfa3aed3 9143    # 7aa5 ^ 7EB7 = 0412   3537
- 11 49 24 070e a276170e cf86 7aa3 47cfa054d3 a17f    # 7aa3 ^ 7EB7 = 0414   3531
- 11 49 45 070e a276170e cfe7 7aa7 47cfa667d3 bd13    # 7aa7 ^ 7EB7 = 0410   3544
+Len ID Cnt Fix Fixed    PCnt Data NewCnt     Crc16     Data ^ Key    (Hex) (Dec)   Watt on display
+--- -- -- ---- -------- ---- ---- ---------- ----      -------------------------   ---------------
+ 11 49 1e 070e a276170e cfbc 7aa5 47cfa3aed3 9143    # 7aa5 ^ 7EB7 = 0412  (1042)  3537
+ 11 49 24 070e a276170e cf86 7aa3 47cfa054d3 a17f    # 7aa3 ^ 7EB7 = 0414  (1044)  3531
+ 11 49 45 070e a276170e cfe7 7aa7 47cfa667d3 bd13    # 7aa7 ^ 7EB7 = 0410  (1040)  3544
 ```
+
+Now, we can verify our assumptions so far by putting the received (and unscrambled) data into the mathematical formula defined above:
+
+```
+Power (W)  = (1024) * (60 * 60) / (the seconds between flashes * number of Imp/kWh printed on meter)
+           = (1024) * (60 * 60) / (unscrambled value sent in the 'Data' column)
+           = 3686400            / (unscrambled value sent in the 'Data' column)
+
+===>
+
+Power (W) = 3686400 / 1042 = 3537
+Power (W) = 3686400 / 1044 = 3531
+Power (W) = 3686400 / 1040 = 3544
+```
+
+These values match what we have seen on the receiving display, and thus we can concider our assumptions verified.
+
 
 XXX TODO: Insert some photos here
 
-XXX TODO: Write the finish of using these values in the formulas above to verify our assumption.
 
+## Summary of the packet content analysis
+Knowing the scrambling scheme, we now only need to receive the first packet after power-cycling the sending sensor. This will enabled us to determine the XOR-key as described below. We also attempt to rename the columns:
 
+```
+          |---5-bytes--||--5-bytes--||-5-bytes-|
 
+Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16    
+ 11 49 00  070f   a276170e cfa2 8148 47cfa27e d3 f80d    
+                                  \/ \--+-/
+                                   |    |
+                                   |    +----- The first four bytes of the XOR-key in clear text
+                                   |
+                                   +---------- The last byte of the XOR-key xor'ed with 0xFF (in this case 48^FF=0xB7)
 
+--> XOR-key: 47 cf a2 7e b7 
 
-XXX TODO: continue to document the analysis here
+Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
+ 11 49 00 070f    a276170e cfa2 8148 47cfa27e d3 f80d   <--- Packet data
+          47cf    a27eb747 cfa2 7eb7 47cfa27e b7        <--- XOR key
+ -------------------------------------------------
+          40C0    0008A049 0000 FFFF 47cfa27e 64        <--- Unscrambled result
+```
+
+  * Len     - Length of payload bytes, starting with column Fix (070f) and ending befire the Crc16
+  * ID      - Seems to be a sender ID of some sort
+  * Cnt     - A 8-bit packet counter, wrapping at 0x7F (which makes it 7-bits acutally)
+  * Status  - Some sort of flag/status column with true/false like properies stating if the sensor is detecting any blinks.
+  * Fixed   - 5 bytes of static data. At present, it is hard to make something of it. (See note on 'PCnt' column description.)
+  * PCnt    - A 16-bit packet counter.
+  * Watt    - Average time between pulses which can be used to calculate current power usage using the formula: 3686400            / (unscrambled value sent in the 'Data' column). Note: This is a simplified form for energy meters using 1000 impulses per kWh. If your meter is using other values, you need to use the formula in its original form as discussed above.
+  * PulseCnt - A 32-bit led blink counter. Increases by one for every blink.
+  * d3      - At present, it is hard to make something of it.
+  * Crc16   - The standard Texas Instruments Crc16
 
 # Ideas for the future
+* Build a hardware receiver using a CC1101
+* Build a software receiver using GNU Radio
 * Connect a logic analyzer on the sender to retrieve the CC115L settings sent from the micro-controller.
 * Connect a programmer to the micro-controller and see if we can dump the flash memory.
 
