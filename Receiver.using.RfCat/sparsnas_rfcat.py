@@ -69,8 +69,8 @@ init(d)
 
 print "Waiting for packet..."
 print ""
-print "Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16"
-print "--- -- --- ------ -----    ---- ---- -------- -- -----"
+print "Len ID Cnt Status Fixed    PCnt AvgTime PulseCnt ?? Crc16"
+print "--- -- --- ------ -----    ---- ------- -------- -- -----"
 
 #-----------------
 # Read packet loop
@@ -130,7 +130,7 @@ while True:
             print str.format('{:04X}  ', Status),
             print str.format('{:08X}', Fixed),
             print str.format('{:04X}', PCnt),
-            print str.format('{:04X}', AvgTimeBetweenPulses),
+            print str.format('{:04X}   ', AvgTimeBetweenPulses),
             print str.format('{:08X}', PulseCnt),
             print str.format('{:02X}', Unknown),
             print str.format('{:04X}', Crc),
