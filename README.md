@@ -255,7 +255,7 @@ We hook up the Sparsnäs sensor to the red led on the right in the image above. 
 
 ## Experiment 1: Finding counters
 ![Experiment 1](Docs/Experiment1.jpg?raw=true "Experiment 1")
-In the first experiment, we isolate the sensor in total darkness (using some black electrical tape). Any changing fields would not be related to measured data, but rather counters such as unique packet identifiers, timestamps etc. In this case, we use a sender with ID 400-565-321, and by looking at the hexdump we can identify some patterns. To better view them, we insert spaces to form columns.
+In the first experiment, we isolate the sensor in total darkness (using some black electrical tape). Any changing fields would not be related to measured data, but rather counters such as unique packet identifiers, timestamps etc. In this case, we use a sender with ID 400-565-321 printed on the plastic case, and by looking at the hexdump we can identify some patterns. To better view them, we insert spaces to form columns.
 
 ```
  len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
