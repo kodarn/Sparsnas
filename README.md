@@ -396,7 +396,7 @@ We seem to have 5 bytes before the values repeat. In cryptanalysis, what we're d
 Lets measure if a 5-byte XOR-key would go fit into the packet. We saw in the long packet dump above, that the three first columns (i.e. Len, ID, Cnt) was most likely in clear text. So, the scrambled data begins with the first 'Fix' column and ends where the Crc16 begins. Attempt to fit a 5-byte XOR-key based on that:
 ![Xor key length matching](Docs/XorKeyLengthMatching.png?raw=true "Xor key length matching")
 
-It aligns perfectly, which strengthens our assumption. So, the assumption is now that we have the following XOR-key: `?? cf a2 ?? ??`
+It aligns perfectly, which strengthens our assumption. So, the assumption is now that we have the following XOR-key: ``?? cf a2 ?? ??``
 
 ## Experiment 2: Controlling input data
 ![Experiment 2](Docs/Experiment2.jpg?raw=true "Experiment 2")
@@ -437,7 +437,7 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
           |-5-bytes-||--5-bytes-| |-5-bytes-|
 ```
 The first packet is identical to the one previous to the power cycling. Now, having determined that the 'NewCnt' column is a counter, and its being reset on boot, we can make the assumtion that NewCnt starts with the value zero. We can test if this assumption is reasonably.
-Remember what we stated in "Fact 01" earlier, that is, 0xAA ^ 0x00 = 0xAA. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value 'd3' remains to be figured out. Enough, lets test our assumption:
+Remember what we stated in "Fact 01" earlier, that is, ``0xAA ^ 0x00 = 0xAA``. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value 'd3' remains to be figured out. Enough, lets test our assumption:
 
 ```
 Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16      Xor-Key      NewCnt      Result
@@ -475,7 +475,7 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
  -------------------------------------------------
           40C0 0008??49 0000 FF?? 47cfa27e ??
 ```
-The first and last values (17 & d3) have been static during our whole analysis so far. This makes them very dificult to work with. However, the byte in the middle column 'Data', with the value of 48, has been fluctuating since we started feeding the sensor with led blinks. If we could figure out what this column is used for, perhaps we can solve it. Let summarize what we assumed (and partially have know) so far:
+The first and last values (``17`` & ``d3``) have been static during our whole analysis so far. This makes them very dificult to work with. However, the byte in the middle column 'Data', containing the value ``48``, has been fluctuating since we started feeding the sensor with led blinks. If we could figure out what this column is used for, perhaps we can solve it. Let summarize what we assumed (and partially have know) so far:
   * Len    - Length of payload bytes, starting with column Fix (070f) and ending befire the Crc16
   * ID     - Seems to be a sender ID of some sort
   * Cnt    - A 8-bit packet counter, wrapping at 0x7F (which makes it 7-bits acutally)
@@ -511,7 +511,7 @@ In our test-unscramble operation above we received the following result:
 ```
 When we see FF as the highbyte, we can start to reason. We know the lowbyte must be somewhere between 00 & FF, right? FFFF would translate into -1 in decimal form, which would be a plausable intialization value. Other values, such as FF00, translates into  -256 (or 65280) which may be valid but seems less likely. So we start with an assumption that the Data column starts with the unscrambled value of 0xFFFF.
 
-How do we figure out the XOR-key value? Well, this is what we're asking: 48 ^ ?? = FF  which in XOR-math translates into ?? = 48 ^ FF, which in turn equals B7. 
+How do we figure out the XOR-key value? Well, this is what we're asking: ``48 ^ ?? = FF``  which in XOR-math translates into ``?? = 48 ^ FF``, which in turn equals ``B7``. 
 
 How do we verify this XOR-key? Well, let us capture some data and investigate it. When we receive a packet, pay attention to the values on the receiving display and write them down. We speed up the blink-rate on the Arduino-connected led to one blink per second in order to get more dynamic values. Here's a few selected lines:
 
@@ -541,23 +541,13 @@ These values match what we have seen on the receiving display, and thus we can c
 
 
 ## Summary of the packet content analysis
-Knowing the scrambling scheme, we only need to capture the first packet after power-cycling the sensor. This will enabled us to determine the XOR-key as described below. We also attempt to rename the columns:
+Knowing the scrambling scheme, we only need to capture the **first packet after power-cycling** the sensor. This will enabled us to determine the XOR-key as described below. We also attempt to rename the columns:
 
-```
-          |---5-bytes--||--5-bytes--||-5-bytes-|
-
-Len ID Cnt Status Fixed    PCnt AvgTime PulseCnt ?? Crc16    
- 11 49 00  070f   a276170e cfa2 8148    47cfa27e d3 f80d    
-                                  \/     \--+-/
-                                   |        |
-                                   |        +- The first four bytes of the XOR-key in clear text
-                                   |
-                                   +---------- The last byte of the XOR-key xor'ed with 0xFF
-                                               (in this case 48^FF=0xB7)
-                                               
-
---> XOR-key: 47 cf a2 7e b7 
-```
+![Packet Analysis Summary](Docs/PacketAnalysisSummary.png?raw=true "Packet Analysis Summary")
+Algorithm:
+1. Capture the first packet after power cycling the sensor.
+2. Copy the content from the "PulseCnt" column.
+3. Take the last byte from the "AvgTime" column and XOR it with ``0xFF``. Then append the result as the last byte in our XOR-Key.
 
 Applying that XOR-key then yields:
 
