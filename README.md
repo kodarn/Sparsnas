@@ -553,7 +553,7 @@ These values match what we have seen on the receiving display, and thus we can c
 
 
 ## Summary of the packet content analysis
-Knowing the scrambling scheme, we now only need to receive the first packet after power-cycling the sending sensor. This will enabled us to determine the XOR-key as described below. We also attempt to rename the columns:
+Knowing the scrambling scheme, we only need to capture the first packet after power-cycling the sensor. This will enabled us to determine the XOR-key as described below. We also attempt to rename the columns:
 
 ```
           |---5-bytes--||--5-bytes--||-5-bytes-|
@@ -567,7 +567,10 @@ Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
                                    +---------- The last byte of the XOR-key xor'ed with 0xFF (in this case 48^FF=0xB7)
 
 --> XOR-key: 47 cf a2 7e b7 
+```
 
+Applying that XOR-key then yields:
+```
 Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
  11 49 00 070f    a276170e cfa2 8148 47cfa27e d3 f80d   <--- Packet data
           47cf    a27eb747 cfa2 7eb7 47cfa27e b7        <--- XOR key
@@ -575,16 +578,19 @@ Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
           40C0    0008A049 0000 FFFF 00000000 64        <--- Unscrambled result
 ```
 
+To summarize what we have found out of the packet content:
   * Len     - Length of payload bytes, starting with column Fix (070f) and ending befire the Crc16
   * ID      - Seems to be a sender ID of some sort
   * Cnt     - A 8-bit packet counter, wrapping at 0x7F (which makes it 7-bits acutally)
   * Status  - Some sort of flag/status column with true/false like properies stating if the sensor is detecting any blinks.
   * Fixed   - 5 bytes of static data. At present, it is hard to make something of it. (See note on 'PCnt' column description.)
   * PCnt    - A 16-bit packet counter.
-  * Watt    - Average time between pulses which can be used to calculate current power usage using the formula: 3686400            / (unscrambled value sent in the 'Data' column). Note: This is a simplified form for energy meters using 1000 impulses per kWh. If your meter is using other values, you need to use the formula in its original form as discussed above.
+  * Watt    - Average time between pulses which can be used to calculate current power usage using the formula: 3686400 / (unscrambled value sent in the 'Data' column). Note: This is a simplified form for energy meters using 1000 impulses per kWh. If your meter is using other values, you need to use the formula in its original form as discussed above.
   * PulseCnt - A 32-bit led blink counter. Increases by one for every blink.
   * d3      - At present, it is hard to make something of it.
   * Crc16   - The standard Texas Instruments Crc16
+
+This enables us to write a small and simple Python-script to decode the signal:
 
 ![Decoder using RfCat](Receiver.using.RfCat/sparsnas_rfcat.jpg?raw=true "Decoder using RfCat")
 
