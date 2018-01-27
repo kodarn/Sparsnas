@@ -508,7 +508,7 @@ There are numerous projects out there describing the mathematics in detail, so w
 
 Example: If the LED flashes once every 5.2 seconds on a meter labelled 800 kWh, the power going through the meter at that time will be 3600 / (5.2 * 800) = 0.865 kW. If we want Watt instead of kW, we multiply by 1024 which yields (3600 * 1024) / (5.2 * 800) = 886 Watt.
 
-Side note: *We have set k=1024 instead of k=1000. As it turns out (which we will see later) the Sparsnas manufacturer have defined k as 1024 when transfering the packets. However, in a generic formula it might have been more correct to write it as k=1000, but that isn't applicable here in our scenario.*
+Side note: *We have set k=1024 instead of k=1000. As it turns out (which we will see later) the Sparsnas manufacturer have defined k as 1024 when transfering the packets. However, in a generic formula it might have been more correct to write it as k=1000, but that isn't applicable here in our scenario. One can also speculate whether its "cheaper" to shift 10 bits (i.e. k=1024) compared to the multiply/division by 1000, but we won't know that until we dump the flash memory.*
 
 With this in mind, we can make an assumption that the 'Data' column should contain the timing information in the fraction-denominator in some form. But to get to this, we first need to figure out the last byte in the XOR-key.
 
