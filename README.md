@@ -379,33 +379,26 @@ We now know that given the value of zero, the xor-key *at some positions* in the
 ```
  len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
  11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
-
- Can we detect the 'cfa2'-sequence anywhere else? 
 ```
-Well, yes, we have one hit in the last 'Fixed' column. If we now make the following assumptions:
+Can we detect the 'cfa2'-sequence anywhere else? Well, yes, we seem to have one hit in the last 'Fixed' column. 
 
-    * That column (at least at those positions) also starts with 0x000.
+![Simple Frequency Analysis](Docs/SimpleFrequencyAnalysis.png?raw=true "Simple Frequency Analysis")
+
+If we now make the following assumptions:
+
+    * That last column named "Fixed" also starts with 0x000 (at least at the cfa2 positions).
     * Repeating sequences indicates a rolling XOR-key, where we have a 
       shorter key compared to the longer data to be scrambled.
 
 Lets measure the byte-distance:
-```
- len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
- 11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
-                           >---- ---- --<
-```
+![Xor key length](Docs/XorKeyLength.png?raw=true "Xor key length")
+
 We seem to have 5 bytes before the values repeat. In cryptanalysis, what we're doing here is known as [Frequency analysis](https://en.wikipedia.org/wiki/Frequency_analysis). If our assumptions are correct, it means we have a 5-byte long XOR-key.
 
 Lets measure if a 5-byte XOR-key would go fit into the packet. We saw in the long packet dump above, that the three first columns (i.e. Len, ID, Cnt) was most likely in clear text. So, the scrambled data begins with the first 'Fix' column and ends where the Crc16 begins. Attempt to fit a 5-byte XOR-key based on that:
-```
- len  ID  Cnt Fix Fixed   Cnt2DataFixed      Crc16
- 11   49   00 070fa276170ecfa2814847cfa27ed3 f80d
-              |-5-byte-||-5-byte-||-5-byte-|
+![Xor key length matching](Docs/XorKeyLengthMatching.png?raw=true "Xor key length matching")
 
-It aligns perfectly, which strengthens our assumption.
-```
-
-The assumption is now that we have the following XOR-key: ??cfa2???? 
+It aligns perfectly, which strengthens our assumption. So, the assumption is now that we have the following XOR-key: `?? cf a2 ?? ??`
 
 ## Experiment 2: Controlling input data
 ![Experiment 2](Docs/Experiment2.jpg?raw=true "Experiment 2")
