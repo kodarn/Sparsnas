@@ -564,12 +564,15 @@ Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
                                    |    |
                                    |    +----- The first four bytes of the XOR-key in clear text
                                    |
-                                   +---------- The last byte of the XOR-key xor'ed with 0xFF (in this case 48^FF=0xB7)
+                                   +---------- The last byte of the XOR-key xor'ed with 0xFF
+                                               (in this case 48^FF=0xB7)
+                                               
 
 --> XOR-key: 47 cf a2 7e b7 
 ```
 
 Applying that XOR-key then yields:
+
 ```
 Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
  11 49 00 070f    a276170e cfa2 8148 47cfa27e d3 f80d   <--- Packet data
@@ -577,6 +580,7 @@ Len ID Cnt Status Fixed    PCnt Watt PulseCnt ?? Crc16
  -------------------------------------------------
           40C0    0008A049 0000 FFFF 00000000 64        <--- Unscrambled result
 ```
+![Packet layout with data example](Docs/PacketLayout.png?raw=true "Packet layout with data example")
 
 To summarize what we have found out of the packet content:
   * Len     - Length of payload bytes, starting with column Fix (070f) and ending befire the Crc16
