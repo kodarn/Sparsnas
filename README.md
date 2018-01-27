@@ -82,11 +82,11 @@ We now want to verify that our analysis is correct. We do this by looking up the
 
 ![Look up the CRC algorithm used in the Texas Instruments documentation and test the values](Docs/13.Look.up.the.CRC.algorithm.used.in.TI-docs.and.test.the.values.png?raw=true "Look up the CRC algorithm used in the Texas Instruments documentation and test the values")
 
-We do a quick implementation of the algorithm in an online c++ compiler/debugger environment, and when executing it we end up with "crc checksum: 0x1204" which matches the expected crc value.
+We do a quick implementation of the algorithm in an online C++ compiler/debugger environment, and when executing it we end up with "crc checksum: 0x1204" which matches the expected crc value.
 
-We can now go on to the next step in the analysis which is recording more data. Now since the sender and receiver are of the Texas Instruments family CCxxxx, we use a usb hardware dongle called ["Yard Stick One"](https://greatscottgadgets.com/yardstickone/). It consists of a CC1111 chip which can be controlled using the Python-library RfCat.
+We can now go on to the next step in the analysis which is recording more data. Now since the sender and receiver are part of the Texas Instruments family CCxxxx, we use a usb hardware dongle called ["Yard Stick One"](https://greatscottgadgets.com/yardstickone/). It consists of a CC1111 chip which can be controlled using the Python-library RfCat.
 
-To start doing this, we need to feed the things we have seen so far in the analysis into the CC1111-tranceiver. Here's how we do that:
+To start doing this, we need to feed the things we have seen so far in the analysis into the CC1111-tranceiver. The screen below demonstrates how to retrieve all the necessary values.
 
 ![Determine CC1111 tranceiver parameters in RfCat](Docs/16.Determine.CC1111.tranceiver.parameters.in.RfCat.png?raw=true "Determine CC1111 tranceiver parameters in RfCat")
 
@@ -255,7 +255,7 @@ We hook up the Sparsnäs sensor to the red led on the right in the image above. 
 
 ## Experiment 1: Finding counters
 ![Experiment 1](Docs/Experiment1.jpg?raw=true "Experiment 1")
-In the first experiment, we isolate the sensor in total darkness (using some black electrical tape). Any changing fields would not be related to measured data, but rather counters such as unique packet identifiers, timestamps etc. In this case, we use a sender with ID 400-565-321 printed on the plastic case, and by looking at the hexdump we can identify some patterns. To better view them, we insert spaces to form columns.
+In the first experiment, we isolate the sensor in total darkness (using some black electrical tape). Any changing fields would not be related to measured data, but rather to counters such as unique packet identifiers, timestamps etc. In this case, we use a sender with ID 400-565-321 printed on the plastic case, and by looking at the hexdump we can identify some patterns. This listing goes on for a very long time in order to detect static and dynamic values in the hexdump-mass. This enables us to separate values and insert spaces to form columns.
 
 ```
  len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
@@ -312,6 +312,7 @@ In the first experiment, we isolate the sensor in total darkness (using some bla
  11   49   05 070f a276170e cf27 8177 47cfa27ed3 1d02
  11   49   06 070f a276170e cf24 8177 47cfa27ed3 2702
  ```
+*(We crop the listing here; hope you get the idea by now)*
 
 * This experiment results in
     * Len = This column matches the number of payload bytes. In the Texas Instruments-case, the payload starts with the column after the length column (namely the 'ID' column) and ends where the CRC16 column begins.
