@@ -15,14 +15,6 @@ d = RfCat()
 XOR_KEY = [0x47, 0xcf, 0xa2, 0x7e, 0xb7] # Xor-key for sensor "400 565 321"
 
 #-----------------------------------------------------------------------------
-# Big/Little endian helpers
-#-----------------------------------------------------------------------------
-def swap16(i):
-    return struct.unpack("<H", struct.pack(">H", i))[0]
-def swap32(i):
-    return struct.unpack("<I", struct.pack(">I", i))[0]
-
-#-----------------------------------------------------------------------------
 # Initialize radio
 #-----------------------------------------------------------------------------
 def init(d):
@@ -131,18 +123,17 @@ while True:
             for i in xrange(0, len(xorkeyarray)):
                 hexarray_decoded.append(hexarray[i] ^ xorkeyarray[i])
 
-            Len, ID, Cnt, Status, Fixed, PCnt, Watt, PulseCnt, Unknown, Crc = struct.unpack('<BBBHIHHIBH', hexarray_decoded)
+            Len, ID, Cnt, Status, Fixed, PCnt, AvgTimeBetweenPulses, PulseCnt, Unknown, Crc = struct.unpack('>BBBHIHHIBH', hexarray_decoded)
             print str.format(' {:02X}', Len),
             print str.format('{:02X}', ID),
             print str.format('{:02X} ', Cnt),
-            print str.format('{:04X}  ', swap16(Status)),
-            print str.format('{:08X}', swap32(Fixed)),
-            print str.format('{:04X}', swap16(PCnt)),
-            print str.format('{:04X}', swap16(Watt)),
-            print str.format('{:08X}', swap32(PulseCnt)),
+            print str.format('{:04X}  ', Status),
+            print str.format('{:08X}', Fixed),
+            print str.format('{:04X}', PCnt),
+            print str.format('{:04X}', AvgTimeBetweenPulses),
+            print str.format('{:08X}', PulseCnt),
             print str.format('{:02X}', Unknown),
-            print str.format('{:04X}', swap16(Crc)),
+            print str.format('{:04X}', Crc),
 
-            Watt = swap16(Watt) # Fix byte-order
-            Watt = (3686400 / Watt)
+            Watt = (3686400 / AvgTimeBetweenPulses)
             print " # Current power = " + str(Watt)
