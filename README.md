@@ -3,6 +3,8 @@
 # Radio Signal Analysis
 This section describes how to decode the radio transmission.
 
+![Introduction to IKEA Sparsnas](Docs/Sparsnas.intro.png?raw=true "Introduction to IKEA Sparsnas")
+
 The IKEA Sparsnäs consists of a sensor measuring energy led blinks. It uses a TexasInstruments CC115L transmitter, and the display-enabled receiver uses a TexasInstruments CC113L.
 
  * [Texas Instruments CC115L](Docs/TexasInstruments.CC115L-RF.Transmitter.On.Sensor.pdf) - Transmitter datasheet
@@ -424,8 +426,8 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
 ```
 
 ### Initial observations
-* The firsted fixed column is now 070e instead of 070f. This could be a status-field which indicates that the sensor is receiving led-blinks. One could speculate that either 070e or 070f represents a TRUE/FALSE value.
-* The 'NewCnt' and the following value d3 seems to be different columns, since d3 is constant and NewCnt behaves like a 32-bit counter, so we space them apart.
+* The first `fixed` column is now `070e` instead of `070f`. This could be a status-field which indicates that the sensor is receiving led-blinks. One could speculate that either `070e` or `070f` represents a `TRUE/FALSE` value.
+* The `NewCnt` and the following value `d3` seems to be two separate columns, since `d3` is constant and `NewCnt` behaves like a 32-bit counter, so we space them apart.
 
 ### Power cycling
 Now lets pull the battery out and put it back in again. The interesting thing is to determine whether any values are persistent over the power cycle, or if they are being reset back to default values. At the same time, we take our assumption of a 5-byte XOR-key length into account. Watch what happens:
@@ -437,8 +439,8 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
  11 49 00 070f a276170e cfa2 8148 47cfa27e d3 f80d
           |-5-bytes-||--5-bytes-| |-5-bytes-|
 ```
-The first packet is identical to the one previous to the power cycling. Now, having determined that the 'NewCnt' column is a counter, and its being reset on boot, we can make the assumtion that NewCnt starts with the value zero. We can test if this assumption is reasonably.
-Remember what we stated in "Fact 01" earlier, that is, ``0xAA ^ 0x00 = 0xAA``. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value 'd3' remains to be figured out. Enough, lets test our assumption:
+The first packet is identical to the one previous to the power cycling. Now, having determined that the `NewCnt` column is a counter, and its being reset on boot, we can make the assumtion that `NewCnt` starts with the value zero. We can test if this assumption is reasonably.
+Remember what we stated in "Fact 01" earlier, that is, ``0xAA ^ 0x00 = 0xAA``. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value `d3` remains to be figured out. Enough, lets test our assumption:
 
 ```
 Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16      Xor-Key      NewCnt      Result
@@ -489,7 +491,7 @@ The first and last values (``17`` & ``d3``) have been static during our whole an
   * Crc16  - The standard Texas Instruments Crc16
 
 ### Figuring out the last byte in the XOR-key
-Lets take a step back and reason a little bit. The only two columns which are changed relative to led blinks are 'Data' and 'NewCnt'. That means they are the only two columns which can affect the Watt-value printed on the receiving display. Now, the 'NewCnt' column only measures the total amounts of led blinks. However, the receiving display also shows the *current* power usage in Watts. We should look into the theory of how that works. Infact, this is commonly described as the process of converting led impulses to Watts in modern domestic electricity consumption and microgeneration meters.
+Lets take a step back and reason a little bit. The only two columns which are changed relative to led blinks are `Data` and `NewCnt`. That means they are the only two columns which can affect the Watt-value printed on the receiving display. Now, the `NewCnt` column only measures the total amounts of led blinks. However, the receiving display also shows the *current* power usage in Watts. We should look into the theory of how that works. Infact, this is commonly described as the process of converting led impulses to Watts in modern domestic electricity consumption and microgeneration meters.
 
 There are numerous projects out there describing the mathematics in detail, so we'll keep it short here. 
 
@@ -499,7 +501,7 @@ Example: If the LED flashes once every 5.2 seconds on a meter labelled 800 kWh, 
 
 Side note: *We have set k=1024 instead of k=1000. As it turns out (which we will see later) the Sparsnas manufacturer have defined k as 1024 when transfering the packets. However, in a generic formula it might have been more correct to write it as k=1000, but that isn't applicable here in our scenario. One can also speculate whether its "cheaper" to shift 10 bits (i.e. k=1024) compared to the multiply/division by 1000, but we won't know that until we dump the flash memory.*
 
-With this in mind, we can make an assumption that the 'Data' column should contain the timing information in the fraction-denominator in some form. But to get to this, we first need to figure out the last byte in the XOR-key.
+With this in mind, we can make an assumption that the `Data` column should contain the timing information in the fraction-denominator in some form. But to get to this, we first need to figure out the last byte in the XOR-key.
 
 ### Default value assumption
 In our test-unscramble operation above we received the following result:
@@ -510,7 +512,7 @@ In our test-unscramble operation above we received the following result:
                  ----
                  FF??
 ```
-When we see FF as the highbyte, we can start to reason. We know the lowbyte must be somewhere between 00 & FF, right? FFFF would translate into -1 in decimal form, which would be a plausable intialization value. Other values, such as FF00, translates into  -256 (or 65280) which may be valid but seems less likely. So we start with an assumption that the Data column starts with the unscrambled value of 0xFFFF.
+When we see `FF` as the highbyte, we can start to reason. We know the lowbyte must be somewhere between `00` & `FF`, right? `FFFF` would translate into `-1` in decimal form, which would be a plausable intialization value. Other values, such as `FF00`, translates into `-256` (or `65280` decimal) which may be valid but seems less likely. So we start with an assumption that the Data column starts with the unscrambled value of `0xFFFF`.
 
 How do we figure out the XOR-key value? Well, this is what we're asking: ``48 ^ ?? = FF``  which in XOR-math translates into ``?? = 48 ^ FF``, which in turn equals ``B7``. 
 
