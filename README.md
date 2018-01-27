@@ -1,5 +1,4 @@
 # Sparsnas
-Note: This is work in progress and content may change at any time.
 
 # Radio Signal Analysis
 This section describes how to decode the radio transmission.
@@ -16,7 +15,7 @@ First, you need to have some sort of Software Defined Radio (SDR) installed on y
 
 XXX TODO: insert photo of them here
 
-Second, you need some software to record the signal. You will find any alternatives ranging from simple commandline apps to more advanced guis. The Ikea Sparsnäs sends a signal on the 868 MHz band, and here are a few alternatives to record on that band.
+Second, you need some software to record the signal. You will find alternatives ranging from simple commandline apps to more advanced guis. The Ikea Sparsnäs sends a signal on the 868 MHz band, and here are a few alternatives to record which you can use.
 
 ```
 rtl_sdr -f 868000000 -s 1024000 -g 40 - > outfile.cu8
@@ -27,6 +26,8 @@ osmocom_fft -a airspy -f 868000000 -v
 ```
 
 This text will not go into the details on how to install them. This text will continue assuming that you managed to record a signal to file on disk using one of the command lines above. Note: different applications stores the signal data in different formats such as *.cu8, *.cs8, *.cu16, *.cfile, etc. Common to all these formats is the sample form called ["IQ"](http://whiteboard.ping.se/SDR/IQ).
+
+If you have never worked with signal analysis before, you can check out Mike Ossmann's introduction tutorials on the Yard Stick One: [Part 1](https://www.youtube.com/watch?v=eVqIe3na_Zk) and [Part 2](https://www.youtube.com/watch?v=vf38-8LbDuw).
 
 ##### Open the recorded signal file in a graphical interface for analysis
 
@@ -81,7 +82,7 @@ We now want to verify that our analysis is correct. We do this by looking up the
 
 We do a quick implementation of the algorithm in an online c++ compiler/debugger environment, and when executing it we end up with "crc checksum: 0x1204" which matches the expected crc value.
 
-We can now go on to the next step in the analysis which is recording more data. Now since the sender and transmitter are of the Texas Instruments family CCxxxx, we use a usb hardware dongle called ["Yard Stick One"](https://greatscottgadgets.com/yardstickone/). It consists of a CC1111 chip which can be controlled using the Python-library RfCat.
+We can now go on to the next step in the analysis which is recording more data. Now since the sender and receiver are of the Texas Instruments family CCxxxx, we use a usb hardware dongle called ["Yard Stick One"](https://greatscottgadgets.com/yardstickone/). It consists of a CC1111 chip which can be controlled using the Python-library RfCat.
 
 To start doing this, we need to feed the things we have seen so far in the analysis into the CC1111-tranceiver. Here's how we do that:
 
@@ -182,7 +183,7 @@ while True:
         pass
 
     #------------------------
-    # When we got a packet...
+    # When we get a packet...
     #------------------------
     if capture:
 
@@ -214,12 +215,12 @@ while True:
                 print  pkt_crc.replace(" ","")
 ```
 
-When we run the script and start to get some data, we quickly identify that the packet content does not match what is shown on the receiving display. We can therefore conclude that the packet content is scrambled in some way. However, since the sensor is a small battery powered device with limited computational resources it is a fair assumption that we're dealing with some kind of simplistic XOR obfuscation of sorts.
+When we run the script and start to get some data, we quickly identify that the packet content does not match what is shown on the receiving display. We can therefore conclude that the packet content is scrambled in some way. However, since the sensor is a small battery powered device with limited computational resources it is a fair assumption that we're dealing with some kind of simplistic XOR obfuscation of sorts, and not power-hungry encryption algorithms.
 
 ![First attempt to look for patterns in packet content](Docs/17.First.attempt.to.look.for.patterns.in.packet.content.png?raw=true "First attempt to look for patterns in packet content")
 
 # Packet content Analysis
-At this point, we know nothing of the internal packet layout, but we can start to identify patterns. This is a creative process which can be time consuming. First we need to list possible entities that may, or not may, be in the Data Field-part of the signal.
+At this point, we know nothing of the internal packet layout, but we can start to identify some patterns. This is a creative process which can be quite time consuming. First we need to list possible entities that may, or not may, be in the Data Field-part of the signal.
 
 ### Constants
 
@@ -240,7 +241,7 @@ At this point, we know nothing of the internal packet layout, but we can start t
  * Extra crc's or other hashes
  * etc
 
-The list goes on an on, but lets start with those elements for now. When identifying element-patterns we need to control the signal being sent as much as possible. Therefore we build a simple led-blinker with an Arduino board. The led is flashing at a predetermined rate which we control. Knowing the stable flash rate we can observe what kWh they translate into on the receiving display. This is a good starting point for our analysis. Other things we may consider could be to hook up the sensor to a voltage cube and vary the transmitters battery voltage. A third option is to purchase several Sparsnäs devices, and decode signals from the different senders which may have different sender properties or identifiers. 
+The list goes on an on, but lets start with those elements for now. When identifying element-patterns we need to control the signal being sent as much as possible. Therefore we build a simple led-blinker with an Arduino board. The led is flashing at a predetermined rate which we control. While forcing the stable flash rate we can observe what kWh the led blinks translate into on the receiving display. This is a good starting point for our analysis. Other things we may consider could be to hook up the sensor to a voltage cube and vary the transmitters battery voltage. A third option is to purchase several Sparsnäs devices, and decode signals from the different senders which may have different sender properties or identifiers. 
 
 ## Led blink helper tool
 <img src="LedBlinkerHelperTool/LedFlasher.png"  width="200" />
@@ -299,7 +300,7 @@ In the first experiment, we isolate the sensor in total darkness (using some bla
  11   49   7b 070f a276170e cfd9 8177 47cfa27ed3 7a25
  11   49   7c 070f a276170e cfde 8177 47cfa27ed3 9826
  11   49   7d 070f a276170e cfdf 8177 47cfa27ed3 0e25
- <this packet (7e) was lost in sniffing>
+       pkt 7e was lost during signal recording
  11   49   7f 070f a276170e cfdd 8177 47cfa27ed3 a226
  11   49   00 070f a276170e cf22 8177 47cfa27ed3 5302 # Column 'Cnt' wraps
  11   49   01 070f a276170e cf23 8177 47cfa27ed3 c501
@@ -312,7 +313,7 @@ In the first experiment, we isolate the sensor in total darkness (using some bla
 
 * This experiment results in
     * Len = This column matches the number of payload bytes. In the Texas Instruments-case, the payload starts with the column after the length column (namely the 'ID' column) and ends where the CRC16 column begins.
-    * ID = The signal analysis we performed in DspectrumGUI (previously) was done using a different sensor. Here we see that the 2nd byte is changed when we're using another sensor. We assume that this is some sort of sensor ID, and therefore name the column 'ID'.
+    * ID = The signal analysis we performed in DspectrumGUI (previously) was performed using a different sensor. Here we see that the 2nd byte is changed when we're using the new sensor. We assume that this is some sort of sensor ID, and therefore name the column 'ID'.
     * We find what looks like two counters and name them 'Cnt'. 
         * As for the first, it isn't scrambled and continues to increase until it reaches 0x7F. Then it restarts at 0x00 again.
         * The second 'Cnt2' is scrambled, and its easily mixed with the column next to it named 'Data'. However, when scrolling down until packet 0x45, we see that the 'Data' column stabillizes at '8177'. This makes it very likely we're dealing with two separate columns.
@@ -345,7 +346,7 @@ In the first experiment, we isolate the sensor in total darkness (using some bla
     | packet 04  | 11 22 33 47 | <-------+  |                 | 11 22 33 44 ^ 11 22 33 47 = 00 00 00 03
     | packet 05  | 11 22 33 40 | <----------+                 | 11 22 33 44 ^ 11 22 33 48 = 00 00 00 04
 ```
-    * In counter series starting with *zero*, xor'ing the start value with the following elements, results in the counter sequence in clear text.
+* In counter series starting with *zero*, xor'ing the start value with the following elements, results in the counter sequence in clear text.
 
 ### Applying what we now know about XOR to our own data
 
@@ -382,7 +383,8 @@ We now know that given the value of zero, the xor-key *at some positions* in the
 Well, yes, we have one hit in the last 'Fixed' column. If we now make the following assumptions:
 
     * That column (at least at those positions) also starts with 0x000.
-    * Repeating sequences indicates a rolling XOR-key, where we have a shorter key compared to the longer data to be scrambled.
+    * Repeating sequences indicates a rolling XOR-key, where we have a 
+      shorter key compared to the longer data to be scrambled.
 
 Lets measure the byte-distance:
 ```
@@ -517,7 +519,7 @@ In our test-unscramble operation above we received the following result:
                  ----
                  FF??
 ```
-When we see FF as the highbyte, we can start to reason. We know the lowbyte must be somewhere between 00 & FF, right? FFFF would translate into -1 in decimal form, which would be a plausable intialization value. Other values, such as FF00, translates into  -256 (or 65280) which may be valid but seems less likely. So we start with and assumption that the Data column starts with the unscrambled value of 0xFFFF.
+When we see FF as the highbyte, we can start to reason. We know the lowbyte must be somewhere between 00 & FF, right? FFFF would translate into -1 in decimal form, which would be a plausable intialization value. Other values, such as FF00, translates into  -256 (or 65280) which may be valid but seems less likely. So we start with an assumption that the Data column starts with the unscrambled value of 0xFFFF.
 
 How do we figure out the XOR-key value? Well, this is what we're asking: 48 ^ ?? = FF  which in XOR-math translates into ?? = 48 ^ FF, which in turn equals B7. 
 
@@ -546,9 +548,6 @@ Power (W) = 3686400 / 1040 = 3544
 ```
 
 These values match what we have seen on the receiving display, and thus we can concider our assumptions verified.
-
-
-XXX TODO: Insert some photos here
 
 
 ## Summary of the packet content analysis
