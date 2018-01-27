@@ -17,7 +17,7 @@ First, you need to have some sort of Software Defined Radio (SDR) installed on y
 <img src="https://greatscottgadgets.com/images/h1-preliminary1-445.jpeg" width="30%"><img src="https://airspy.com/wp-content/uploads/2016/04/airspy_board_right.png" width="24%"><img src="https://www.rtl-sdr.com/wp-content/uploads/2013/04/main_dongleonly_site2.jpg" width="19%">
 
 
-Second, you need some software to record the signal. You will find alternatives ranging from simple commandline apps to more advanced guis. The Ikea Sparsnäs sends a signal on the 868 MHz band, and here are a few alternatives to record which you can use.
+Second, you need some software to record the signal. You will find alternatives ranging from simple commandline apps to more advanced guis. Here are a few alternatives you can use. The Ikea Sparsnäs sends a signal on the 868 MHz band:
 
 ```
 rtl_sdr -f 868000000 -s 1024000 -g 40 - > outfile.cu8
@@ -27,11 +27,11 @@ hackrf_transfer -r outfile.cs8 -f 868000000 -s 2000000
 osmocom_fft -a airspy -f 868000000 -v
 ```
 
-This text will not go into the details on how to install them. This text will continue assuming that you managed to record a signal to file on disk using one of the command lines above. Note: different applications stores the signal data in different formats such as *.cu8, *.cs8, *.cu16, *.cfile, etc. Common to all these formats is the sample form called ["IQ"](http://whiteboard.ping.se/SDR/IQ).
+This text will not go into the details on how to install the software. This text will continue assuming that you managed to record a signal to file on disk using one of the command lines above. Note: different applications stores the signal data in different formats such as *.cu8, *.cs8, *.cu16, *.cfile, etc. Common to all these formats is the sample form called ["IQ"](http://whiteboard.ping.se/SDR/IQ).
 
 If you have never worked with signal analysis before, you can check out Mike Ossmann's introduction tutorials on the Yard Stick One: [Part 1](https://www.youtube.com/watch?v=eVqIe3na_Zk) and [Part 2](https://www.youtube.com/watch?v=vf38-8LbDuw).
 
-##### Open the recorded signal file in a graphical interface for analysis
+### Open the recorded signal file in a graphical interface for analysis
 
  There are many different techniques and softwares for doing signal analysis. Here we will be using [Inspectrum](https://github.com/miek/inspectrum) and [DspectrumGUI](https://github.com/tresacton/dspectrumgui).
 
