@@ -352,7 +352,7 @@ In the first experiment, we isolate the sensor in total darkness (using some bla
 
 ### Applying what we now know about XOR to our own data
 
-Lets assume that the 'Cnt2' counter starts at 0x000. To verify this assumption we do the following operation. Xor the starting value with each following value in the column and see what we get:
+Lets assume that the `Cnt2` counter starts at `0x000`. To verify this assumption we do the following operation. Xor the starting value with each following value in the column and see what we get:
 
 ```
  len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
@@ -374,11 +374,11 @@ Lets assume that the 'Cnt2' counter starts at 0x000. To verify this assumption w
 
 ### Look for repetitions in the XOR-data
 
-We now know that given the value of zero, the xor-key *at some positions* in the dataset is 'cfa2'. But if we're lucky, there can be other columns which also begins with the value of zero, but isn't counters. Lets consider the top row:
+We now know that given the value of zero, the xor-key *at some positions* in the dataset is `cfa2`. But if we're lucky, there can be other columns which also begins with the value of zero, but isn't counters. Lets consider the top row:
 
 ![Prior to identifying Xor key length](Docs/XorKeyLength-prior.png?raw=true "Prior to identifying Xor key length")
 
-Can we detect the 'cfa2'-sequence anywhere else? Well, yes, we seem to have one hit in the last 'Fixed' column. 
+Can we detect the `cfa2` sequence anywhere else? Well, yes, we seem to have one hit in the last 'Fixed' column. 
 
 ![Simple Frequency Analysis](Docs/SimpleFrequencyAnalysis.png?raw=true "Simple Frequency Analysis")
 
