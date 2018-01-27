@@ -544,7 +544,7 @@ These values match what we have seen on the receiving display, and thus we can c
 Knowing the scrambling scheme, we only need to capture the **first packet after power-cycling** the sensor. This will enabled us to determine the XOR-key as described below. We also attempt to rename the columns:
 
 ![Packet Analysis Summary](Docs/PacketAnalysisSummary.png?raw=true "Packet Analysis Summary")
-##Algorithm:
+### Algorithm:
 1. Capture the first packet after power cycling the sensor.
 2. Copy the content from the "PulseCnt" column.
 3. Take the last byte from the "AvgTime" column and XOR it with ``0xFF``. Then append the result as the last byte in our XOR-Key.
