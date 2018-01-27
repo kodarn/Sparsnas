@@ -393,10 +393,8 @@ Lets measure the byte-distance:
  len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
  11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
                            >---- ---- --<
-
-We seem to have 5 bytes before the values repeat. If our assumptions are correct,
-it means we have a 5-byte long XOR-key.
 ```
+We seem to have 5 bytes before the values repeat. In cryptanalysis, what we're doing here is known as [Frequency analysis](https://en.wikipedia.org/wiki/Frequency_analysis). If our assumptions are correct, it means we have a 5-byte long XOR-key.
 
 Lets measure if a 5-byte XOR-key would go fit into the packet. We saw in the long packet dump above, that the three first columns (i.e. Len, ID, Cnt) was most likely in clear text. So, the scrambled data begins with the first 'Fix' column and ends where the Crc16 begins. Attempt to fit a 5-byte XOR-key based on that:
 ```
