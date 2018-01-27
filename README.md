@@ -13,7 +13,11 @@ The IKEA Sparsnäs consists of a sensor measuring energy led blinks. It uses a T
 
 First, you need to have some sort of Software Defined Radio (SDR) installed on your system. There are many out there; [RTL-SDR](https://www.rtl-sdr.com/rtl-sdr-blog-v-3-dongles-user-guide/), [HackRF-One](https://greatscottgadgets.com/hackrf/), [AirSpy](https://airspy.com/products/) just to name a few.
 
-XXX TODO: insert photo of them here
+
+ <img src="https://greatscottgadgets.com/images/h1-preliminary1-445.jpeg" width="30%">
+ <img src="https://airspy.com/wp-content/uploads/2016/04/airspy_board_right.png" width="24%">
+ <img src="https://www.rtl-sdr.com/wp-content/uploads/2013/04/main_dongleonly_site2.jpg" width="19%">
+
 
 Second, you need some software to record the signal. You will find alternatives ranging from simple commandline apps to more advanced guis. The Ikea Sparsnäs sends a signal on the 868 MHz band, and here are a few alternatives to record which you can use.
 
