@@ -376,10 +376,8 @@ Lets assume that the 'Cnt2' counter starts at 0x000. To verify this assumption w
 
 We now know that given the value of zero, the xor-key *at some positions* in the dataset is 'cfa2'. But if we're lucky, there can be other columns which also begins with the value of zero, but isn't counters. Lets consider the top row:
 
-```
- len  ID  Cnt Fix  Fixed    Cnt2 Data Fixed      Crc16
- 11   49   00 070f a276170e cfa2 8148 47cfa27ed3 f80d
-```
+![Prior to identifying Xor key length](Docs/XorKeyLength-prior.png?raw=true "Prior to identifying Xor key length")
+
 Can we detect the 'cfa2'-sequence anywhere else? Well, yes, we seem to have one hit in the last 'Fixed' column. 
 
 ![Simple Frequency Analysis](Docs/SimpleFrequencyAnalysis.png?raw=true "Simple Frequency Analysis")
