@@ -1,4 +1,4 @@
-# Sparsnas
+# Sparsnäs
 
 Ikea Sparsnäs is an energy monitor which aim is to monitor electricity usage. It consists of two parts; a sensor and a display:
 
