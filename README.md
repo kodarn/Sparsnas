@@ -1,15 +1,20 @@
 # Sparsnas
 
-# Radio Signal Analysis
-This section describes how to decode the radio transmission.
+Ikea Sparsnäs is an energy monitor which aim is to monitor electricity usage. It consists of two parts; a sensor and a display:
 
 ![Introduction to IKEA Sparsnas](Docs/Sparsnas.intro.png?raw=true "Introduction to IKEA Sparsnas")
 
-The IKEA Sparsnäs consists of a sensor measuring energy led blinks. It uses a TexasInstruments CC115L transmitter, and the display-enabled receiver uses a TexasInstruments CC113L.
+It uses a Texas Instruments CC115L transmitter, and the display-enabled receiver uses a Texas Instruments CC113L.
 
  * [Texas Instruments CC115L](Docs/TexasInstruments.CC115L-RF.Transmitter.On.Sensor.pdf) - Transmitter datasheet
  * [Texas Instruments CC113L](Docs/TexasInstruments.CC113L-RF.Receiver.On.Display.pdf) - Receiver datasheet
  
+## The sending sensor
+The sensor consists of a led impulse sensor connected to a Texas Instruments [MSP430G2433](TexasInstruments.MSP430G2433-MicroController.On.Sensor.pdf) micro-controller, where the sensor data is processed. Every 15'th second, the micro-controller sends the collected sensor data via [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus) to the CL115 RF-transmitter, which broadcasts the data wireless to the receiving display.
+![The sending sensor](Docs/HardwareBoard_Sender.png?raw=true "The sending sensor")
+
+# Radio Signal Analysis
+This section describes how to decode the radio transmission.
 
 ## Recording the signal
 
