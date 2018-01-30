@@ -10,7 +10,7 @@ It uses a Texas Instruments CC115L transmitter, and the display-enabled receiver
  * [Texas Instruments CC113L](Docs/TexasInstruments.CC113L-RF.Receiver.On.Display.pdf) - Receiver datasheet
  
 ## The sending sensor
-The sensor consists of a led impulse sensor connected to a Texas Instruments [MSP430G2433](TexasInstruments.MSP430G2433-MicroController.On.Sensor.pdf) micro-controller, where the sensor data is processed. Every 15'th second, the micro-controller sends the collected sensor data via [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus) to the CL115 RF-transmitter, which broadcasts the data wireless to the receiving display.
+The sensor consists of a led impulse sensor connected to a Texas Instruments [MSP430G2433](Docs/TexasInstruments.MSP430G2433-MicroController.On.Sensor.pdf) micro-controller, where the sensor data is processed. Every 15'th second, the micro-controller sends the collected sensor data via [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus) to the CL115 RF-transmitter, which broadcasts the data wireless to the receiving display.
 ![The sending sensor](Docs/HardwareBoard_Sender.png?raw=true "The sending sensor")
 
 # Radio Signal Analysis
