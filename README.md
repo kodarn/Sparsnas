@@ -633,7 +633,62 @@ There might be some relationship between S/N and the XOR-Key. What if we could f
 
     S/N ----- secret operation ----> XOR-Key
 
-Can you see any trends or patterns? :wink: 
+Can you see any trends or patterns? :wink: Where we must try many different approaches, which requires scrapping many ideas along the way. However, observe how X2 looks like an increasing counter, and at the same time is encloded by X1 & X3. This is an indication that we're dealing with some sort of column permutation. After chaning column order several times we end up with swapping X2 & X3, and X4 & X5 which is illustrated below. We attempt to subtract the column values in hope of finding some pattern...
+
+```
+| S/N          | S/N (in hex) | XOR-Key        | PemutatedXor - S/N      = Hopefully some pattern
+| -----------: | :----------- | :------------- | ------------------------------------------------
+| 400 565 321  | 17 E0 24 49  | 47 a2 cf b7 7e | 47a2cfb77e   - 17E02449 = 0x478AEF9335
+| 400 595 807  | 17 E0 9B 5F  | 47 a2 d0 2e 94 | 47a2d02e94   - 17E09B5F = 0x478AEF9335
+| 400 628 220  | 17 E1 19 FC  | 47 a2 d0 ad 31 | 47a2d0ad31   - 17E119FC = 0x478AEF9335
+| 400 629 153  | 17 E1 1D A1  | 47 a2 d0 b0 d6 | 47a2d0b0d6   - 17E11DA1 = 0x478AEF9335
+| 400 630 087  | 17 E1 21 47  | 47 a2 d0 b4 7c | 47a2d0b47c   - 17E12147 = 0x478AEF9335
+| 400 631 291  | 17 E1 25 FB  | 47 a2 d0 b9 30 | 47a2d0b930   - 17E125FB = 0x478AEF9335
+| 400 673 174  | 17 E1 C9 96  | 47 a2 d1 5c cb | 47a2d15ccb   - 17E1C996 = 0x478AEF9335
+| 400 710 424  | 17 E2 5B 18  | 47 a2 d1 ee 4d | 47a2d1ee4d   - 17E25B18 = 0x478AEF9335
+                  ^  ^  ^  ^     ^  ^  ^  ^  ^ 
+                  |  |  |  |     |  |  |  |  | 
+   Column names: S1 S2 S3 S4    X1 X3 X2 X5 X4 
+```
+... and look! Its a linear relation!
+
+This finding enables us to write a function that given the S/N outputs the XOR-Key:
+
+``` c++
+#include <stdio.h>
+#include <stdint.h>
+
+void GenerateXorKey(uint32_t SerialNumber)
+{
+    uint8_t *valueArray = NULL;
+
+    // Calculate the permutated xor value
+    uint64_t PermutatedXor = (uint64_t) SerialNumber +  (uint64_t) 0x478AEF9335;
+    
+    // View the PermutatedXor as an array of bytes
+    valueArray = (uint8_t *) &PermutatedXor;
+
+    // Print the XOR-Key and swap X2<->X3, X4<->X5 
+    printf("%02x ", valueArray[4]);
+    printf("%02x ", valueArray[2]); 
+    printf("%02x ", valueArray[3]);
+    printf("%02x ", valueArray[0]);
+    printf("%02x ", valueArray[1]);
+
+    return;
+}
+
+int main()
+{
+    uint32_t SerialNumber = 0x17E02449; // Serial: 400 565 321
+
+    GenerateXorKey(SerialNumber);
+
+    return 0;
+}
+```
+![Convert serial to XOR-Key](Docs/Serial2Xor.png?raw=true "Convert serial to XOR-Key")
+
 
 # Ideas for the future
 * Build a hardware receiver using a CC1101
