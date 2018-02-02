@@ -614,16 +614,16 @@ This is what the capture of the first packet after plugging the batteries looked
 Pay attention to the serial number (S/N) and the XOR-Key. 
 
 ```
-| S/N          | S/N (in hex) | XOR-Key (applying our algorithm) |
-| -----------: | :----------- | :------------------------------- |
-| 400 565 321  | 17 E0 24 49  | 47 cf a2 7e b7                   |
-| 400 595 807  | 17 E0 9B 5F  | 47 d0 a2 94 2e                   |
-| 400 628 220  | 17 E1 19 FC  | 47 d0 a2 31 ad                   |
-| 400 629 153  | 17 E1 1D A1  | 47 d0 a2 d6 b0                   |
-| 400 630 087  | 17 E1 21 47  | 47 d0 a2 7c b4                   |
-| 400 631 291  | 17 E1 25 FB  | 47 d0 a2 30 b9                   |
-| 400 673 174  | 17 E1 C9 96  | 47 d1 a2 cb 5c                   |
-| 400 710 424  | 17 E2 5B 18  | 47 d1 a2 4d ee                   |
+| S/N          | S/N (in hex) | XOR-Key        |
+| -----------: | :----------- | :------------- |
+| 400 565 321  | 17 E0 24 49  | 47 cf a2 7e b7 |
+| 400 595 807  | 17 E0 9B 5F  | 47 d0 a2 94 2e |
+| 400 628 220  | 17 E1 19 FC  | 47 d0 a2 31 ad |
+| 400 629 153  | 17 E1 1D A1  | 47 d0 a2 d6 b0 |
+| 400 630 087  | 17 E1 21 47  | 47 d0 a2 7c b4 |
+| 400 631 291  | 17 E1 25 FB  | 47 d0 a2 30 b9 |
+| 400 673 174  | 17 E1 C9 96  | 47 d1 a2 cb 5c |
+| 400 710 424  | 17 E2 5B 18  | 47 d1 a2 4d ee |
                   ^  ^  ^  ^     ^  ^  ^  ^  ^
                   |  |  |  |     |  |  |  |  | 
    Column names: S1 S2 S3 S4    X1 X2 X3 X4 X5
