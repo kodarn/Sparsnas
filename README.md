@@ -597,7 +597,6 @@ I took the opportunity to shop when there was a sale at the local store.
 ![Sale at the local store](Docs/SaleAtTheLocalStore.jpg?raw=true "Sale at the local store")
 
 Now comes a repetitive job; for each sensor, capture the first (scrambled) packet after battery insertion. To do this we use our RfCat-script we wrote earlier. This is what the capture looked like:
-
 ```
 | S/N          | Len | ID | Cnt | Status | Fixed    | PCnt | AvgTime | PulseCnt | d3 | Crc16 | XOR-Key (applying our algorithm) |
 | -----------: | :-- | :- | :-- | :----- | :------- | :--- | :------ | :------- | :- | :---- | :------------------------------- |
@@ -633,7 +632,7 @@ There might be some relationship between S/N and the XOR-Key. What if we could f
 
     S/N -----> secret operation ----> XOR-Key
 
-Can you see any trends or patterns? :wink: Here we must try many different approaches, which requires scrapping many ideas along the way. However, observe how X2 looks like an increasing counter, and at the same time is enclosed by X1 & X3. This is an indication that we're dealing with some sort of column permutation. After changing column order several times we end up with swapping X2 & X3, and X4 & X5 which is illustrated below. We attempt to subtract the column values in hope of finding some pattern...
+Can you see any trends or patterns? :wink: Here we must try many different approaches, which requires scrapping many ideas along the way (e.g. [this](Docs/Pattern1.png), [this](Docs/Pattern2.png), and so on...). However, observe how X2 looks like an increasing counter, and at the same time is enclosed by X1 & X3. This is an indication that we're dealing with some sort of column permutation. After changing column order several times we end up with swapping X2 & X3, and X4 & X5 which is illustrated below. We attempt to subtract the column values in hope of finding some pattern...
 
 ```
 | S/N          | S/N (in hex) | XOR-Key        | PemutatedXor - S/N      = Hopefully some pattern
