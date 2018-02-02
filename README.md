@@ -611,7 +611,7 @@ This is what the capture of the first packet after plugging the batteries looked
 | 400 710 424  | 11  | 18 | 00  | 070f   | a247395f | d1a2 | b211    | 47d1a24d | 8a | 3049  | 47 d1 a2 4d ee                   |
 ```
 
-Pay attention to the serial number (S/N) and the XOR-Key. Can you see any trends or patterns? :wink:
+Pay attention to the serial number (S/N) and the XOR-Key. 
 
 ```
 | S/N          | S/N (in hex) | XOR-Key (applying our algorithm) |
@@ -624,9 +624,16 @@ Pay attention to the serial number (S/N) and the XOR-Key. Can you see any trends
 | 400 631 291  | 17 E1 25 FB  | 47 d0 a2 30 b9                   |
 | 400 673 174  | 17 E1 C9 96  | 47 d1 a2 cb 5c                   |
 | 400 710 424  | 17 E2 5B 18  | 47 d1 a2 4d ee                   |
+                  ^  ^  ^  ^     ^  ^  ^  ^  ^
+                  |  |  |  |     |  |  |  |  | 
+   Column names: S1 S2 S3 S4    X1 X2 X3 X4 X5
 ```
 
+There might be some relationship between S/N and the XOR-Key. What if we could formulate it as:
 
+    S/N ----- secret operation ----> XOR-Key
+
+Can you see any trends or patterns? :wink: 
 
 # Ideas for the future
 * Build a hardware receiver using a CC1101
