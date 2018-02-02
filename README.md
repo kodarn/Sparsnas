@@ -601,14 +601,14 @@ This is what the capture of the first packet after plugging the batteries looked
 ```
 | S/N          | Len | ID | Cnt | Status | Fixed    | PCnt | AvgTime | PulseCnt | d3 | Crc16 | XOR-Key (applying our algorithm) |
 | -----------: | :-- | :- | :-- | :----- | :------- | :--- | :------ | :------- | :- | :---- | :------------------------------- |
-| 400 565 321  | 11  | 49 | 00  | 070f   | a276170e | cfa2 | 8148    | 47cfa27e | d3 | f80d  | 47 cf a2 7e b7
-| 400 595 807  | 11  | 5f | 00  | 070f   | a29d3918 | d0a2 | 6bd1    | 47d0a294 | 4a | b472  | 47 d0 a2 94 2e
-| 400 628 220  | 11  | fc | 00  | 070f   | a23838bb | d0a2 | ce52    | 47d0a231 | c9 | 40d8  | 47 d0 a2 31 ad
-| 400 629 153  | 11  | a1 | 00  | 070f   | a2df29e6 | d0a2 | 294f    | 47d0a2d6 | d4 | a250  | 47 d0 a2 d6 b0
-| 400 630 087  | 11  | 47 | 00  | 070f   | a2752900 | d0a2 | 834b    | 47d0a27c | d0 | b906  | 47 d0 a2 7c b4
-| 400 631 291  | 11  | fb | 00  | 070f   | a23918bc | d0a2 | cf46    | 47d0a230 | dd | 7dd3  | 47 d0 a2 30 b9
-| 400 673 174  | 11  | 96 | 00  | 070f   | a2c119d1 | d1a2 | 34a3    | 47d1a2cb | 38 | ab5f  | 47 d1 a2 cb 5c
-| 400 710 424  | 11  | 18 | 00  | 070f   | a247395f | d1a2 | b211    | 47d1a24d | 8a | 3049  | 47 d1 a2 4d ee
+| 400 565 321  | 11  | 49 | 00  | 070f   | a276170e | cfa2 | 8148    | 47cfa27e | d3 | f80d  | 47 cf a2 7e b7                   |
+| 400 595 807  | 11  | 5f | 00  | 070f   | a29d3918 | d0a2 | 6bd1    | 47d0a294 | 4a | b472  | 47 d0 a2 94 2e                   |
+| 400 628 220  | 11  | fc | 00  | 070f   | a23838bb | d0a2 | ce52    | 47d0a231 | c9 | 40d8  | 47 d0 a2 31 ad                   |
+| 400 629 153  | 11  | a1 | 00  | 070f   | a2df29e6 | d0a2 | 294f    | 47d0a2d6 | d4 | a250  | 47 d0 a2 d6 b0                   |
+| 400 630 087  | 11  | 47 | 00  | 070f   | a2752900 | d0a2 | 834b    | 47d0a27c | d0 | b906  | 47 d0 a2 7c b4                   |
+| 400 631 291  | 11  | fb | 00  | 070f   | a23918bc | d0a2 | cf46    | 47d0a230 | dd | 7dd3  | 47 d0 a2 30 b9                   |
+| 400 673 174  | 11  | 96 | 00  | 070f   | a2c119d1 | d1a2 | 34a3    | 47d1a2cb | 38 | ab5f  | 47 d1 a2 cb 5c                   |
+| 400 710 424  | 11  | 18 | 00  | 070f   | a247395f | d1a2 | b211    | 47d1a24d | 8a | 3049  | 47 d1 a2 4d ee                   |
 ```
 
 Pay attention to the serial number (S/N) and the XOR-Key. Can you see any trends or patterns?
@@ -616,14 +616,14 @@ Pay attention to the serial number (S/N) and the XOR-Key. Can you see any trends
 ```
 | S/N          | S/N (in hex) | XOR-Key (applying our algorithm) |
 | -----------: | :----------- | :------------------------------- |
-| 400 565 321  | 17 E0 24 49  | 47 cf a2 7e b7
-| 400 595 807  | 17 E0 9B 5F  | 47 d0 a2 94 2e
-| 400 628 220  | 17 E1 19 FC  | 47 d0 a2 31 ad
-| 400 629 153  | 17 E1 1D A1  | 47 d0 a2 d6 b0
-| 400 630 087  | 17 E1 21 47  | 47 d0 a2 7c b4
-| 400 631 291  | 17 E1 25 FB  | 47 d0 a2 30 b9
-| 400 673 174  | 17 E1 C9 96  | 47 d1 a2 cb 5c
-| 400 710 424  | 17 E2 5B 18  | 47 d1 a2 4d ee
+| 400 565 321  | 17 E0 24 49  | 47 cf a2 7e b7                   |
+| 400 595 807  | 17 E0 9B 5F  | 47 d0 a2 94 2e                   |
+| 400 628 220  | 17 E1 19 FC  | 47 d0 a2 31 ad                   |
+| 400 629 153  | 17 E1 1D A1  | 47 d0 a2 d6 b0                   |
+| 400 630 087  | 17 E1 21 47  | 47 d0 a2 7c b4                   |
+| 400 631 291  | 17 E1 25 FB  | 47 d0 a2 30 b9                   |
+| 400 673 174  | 17 E1 C9 96  | 47 d1 a2 cb 5c                   |
+| 400 710 424  | 17 E2 5B 18  | 47 d1 a2 4d ee                   |
 ```
 
 
