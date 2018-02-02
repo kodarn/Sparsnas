@@ -590,7 +590,7 @@ This enables us to write a small and simple Python-script to decode the signal:
 
 The source code can be found [here](Receiver.using.RfCat/sparsnas_rfcat.py).
 
-## Identifying patters when compairing individual devices
+## Identifying patterns when comparing individual devices
 
 I took the opportunity to shop when there was a sale at the local store. 
 
