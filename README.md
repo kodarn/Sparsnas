@@ -598,6 +598,7 @@ I took the opportunity to shop when there was a sale at the local store.
 
 This is what the capture of the first packet after plugging the batteries looked like:
 
+```
 | S/N          | S/N (in hex) | Len | ID | Cnt | Status | Fixed    | PCnt | AvgTime | PulseCnt | d3 | Crc16 | XOR-Key (applying our algorithm) |
 | -----------: | :----------- | :-- | :- | :-- | :----- | :------- | :--- | :------ | :------- | :- | :---- | :------------------------------- |
 | 400 565 321  | 17 E0 24 49  | 11  | 49 | 00  | 070f   | a276170e | cfa2 | 8148    | 47cfa27e | d3 | f80d  | 47 cf a2 7e b7
@@ -608,6 +609,7 @@ This is what the capture of the first packet after plugging the batteries looked
 | 400 631 291  | 17 E1 25 FB  | 11  | fb | 00  | 070f   | a23918bc | d0a2 | cf46    | 47d0a230 | dd | 7dd3  | 47 d0 a2 30 b9
 | 400 673 174  | 17 E1 C9 96  | 11  | 96 | 00  | 070f   | a2c119d1 | d1a2 | 34a3    | 47d1a2cb | 38 | ab5f  | 47 d1 a2 cb 5c
 | 400 710 424  | 17 E2 5B 18  | 11  | 18 | 00  | 070f   | a247395f | d1a2 | b211    | 47d1a24d | 8a | 3049  | 47 d1 a2 4d ee
+```
 
 Pay attention to the serial number (S/N) and the XOR-Key. Can you see any trends or patterns?
 
