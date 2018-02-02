@@ -611,7 +611,7 @@ This is what the capture of the first packet after plugging the batteries looked
 | 400 710 424  | 11  | 18 | 00  | 070f   | a247395f | d1a2 | b211    | 47d1a24d | 8a | 3049  | 47 d1 a2 4d ee                   |
 ```
 
-Pay attention to the serial number (S/N) and the XOR-Key. Can you see any trends or patterns?
+Pay attention to the serial number (S/N) and the XOR-Key. Can you see any trends or patterns? :wink:
 
 ```
 | S/N          | S/N (in hex) | XOR-Key (applying our algorithm) |
