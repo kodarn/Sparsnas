@@ -596,7 +596,7 @@ I took the opportunity to shop when there was a sale at the local store.
 
 ![Sale at the local store](Docs/SaleAtTheLocalStore.jpg?raw=true "Sale at the local store")
 
-Now comes a repetitive job; for each sensor, capture the first (scrambled) packet after battery insertion. To do this we use our RfCat-script we wrote earlier. This is what the capture looked like:
+Now comes a repetitive job; for each sensor, capture the first (scrambled) packet after battery insertion. To do this we use our RfCat-script we wrote earlier, which also highlights differencies using colors. The source code is [here](Receiver.using.RfCat/sparsnas_rfcat_raw.py). This is what the capture looked like:
 ```
 | S/N          | Len | ID | Cnt | Status | Fixed    | PCnt | AvgTime | PulseCnt | d3 | Crc16 | XOR-Key (applying our algorithm) |
 | -----------: | :-- | :- | :-- | :----- | :------- | :--- | :------ | :------- | :- | :---- | :------------------------------- |
@@ -632,24 +632,24 @@ There might be some relationship between S/N and the XOR-Key. What if we could f
 
     S/N -----> secret operation ----> XOR-Key
 
-Can you see any trends or patterns? :wink: Here we must try many different approaches, which requires scrapping many ideas along the way (e.g. [this](Docs/Pattern1.png), [this](Docs/Pattern2.png), and so on...). However, observe how X2 looks like an increasing counter, and at the same time is enclosed by X1 & X3. This is an indication that we're dealing with some sort of column permutation. After changing column order several times we end up with swapping X2 & X3, and X4 & X5 which is illustrated below. We attempt to subtract the column values in hope of finding some pattern...
+Can you see any trends or patterns? :wink: Here we must try many different approaches, which requires scrapping many ideas along the way (e.g. [this](Docs/Pattern1.png), [this](Docs/Pattern2.png), and so on...). However, observe how X2 looks like an increasing counter, and at the same time is enclosed by X1 & X3. This is an indication that we *might be* dealing with some sort of column permutation. After changing column order several times we end up with swapping X2 & X3, and X4 & X5 which is illustrated below. In hope of finding some patterns, we attempt to subtract the column values...
 
 ```
 | S/N          | S/N (in hex) | XOR-Key        | PemutatedXor - S/N      = Hopefully some pattern
 | -----------: | :----------- | :------------- | ------------------------------------------------
-| 400 565 321  | 17 E0 24 49  | 47 a2 cf b7 7e | 47a2cfb77e   - 17E02449 = 0x478AEF9335
-| 400 595 807  | 17 E0 9B 5F  | 47 a2 d0 2e 94 | 47a2d02e94   - 17E09B5F = 0x478AEF9335
-| 400 628 220  | 17 E1 19 FC  | 47 a2 d0 ad 31 | 47a2d0ad31   - 17E119FC = 0x478AEF9335
-| 400 629 153  | 17 E1 1D A1  | 47 a2 d0 b0 d6 | 47a2d0b0d6   - 17E11DA1 = 0x478AEF9335
-| 400 630 087  | 17 E1 21 47  | 47 a2 d0 b4 7c | 47a2d0b47c   - 17E12147 = 0x478AEF9335
-| 400 631 291  | 17 E1 25 FB  | 47 a2 d0 b9 30 | 47a2d0b930   - 17E125FB = 0x478AEF9335
-| 400 673 174  | 17 E1 C9 96  | 47 a2 d1 5c cb | 47a2d15ccb   - 17E1C996 = 0x478AEF9335
-| 400 710 424  | 17 E2 5B 18  | 47 a2 d1 ee 4d | 47a2d1ee4d   - 17E25B18 = 0x478AEF9335
+| 400 565 321  | 17 E0 24 49  | 47 a2 cf b7 7e | 47a2cfb77e   - 17E02449 = 478AEF9335
+| 400 595 807  | 17 E0 9B 5F  | 47 a2 d0 2e 94 | 47a2d02e94   - 17E09B5F = 478AEF9335
+| 400 628 220  | 17 E1 19 FC  | 47 a2 d0 ad 31 | 47a2d0ad31   - 17E119FC = 478AEF9335
+| 400 629 153  | 17 E1 1D A1  | 47 a2 d0 b0 d6 | 47a2d0b0d6   - 17E11DA1 = 478AEF9335
+| 400 630 087  | 17 E1 21 47  | 47 a2 d0 b4 7c | 47a2d0b47c   - 17E12147 = 478AEF9335
+| 400 631 291  | 17 E1 25 FB  | 47 a2 d0 b9 30 | 47a2d0b930   - 17E125FB = 478AEF9335
+| 400 673 174  | 17 E1 C9 96  | 47 a2 d1 5c cb | 47a2d15ccb   - 17E1C996 = 478AEF9335
+| 400 710 424  | 17 E2 5B 18  | 47 a2 d1 ee 4d | 47a2d1ee4d   - 17E25B18 = 478AEF9335
                   ^  ^  ^  ^     ^  ^  ^  ^  ^ 
                   |  |  |  |     |  |  |  |  | 
    Column names: S1 S2 S3 S4    X1 X3 X2 X5 X4 
 ```
-... and look! Its a linear relation!
+... and look! Its a clear linear relation!
 
 This finding enables us to write a function that given the S/N outputs the XOR-Key:
 
