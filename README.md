@@ -657,6 +657,8 @@ Can you see any trends or patterns? :wink: Here we must try many different appro
 ```
 ... and look! Its a clear linear relation!
 
+Side note: *Remember the microcontroller on the sensor board? The Texas Instruments [MSP430G2433](http://www.ti.com/product/MSP430G2433/datasheet/detailed_description) have 16-bit registers which operate in little endian byte order. So, what we're seeing here is probably just the MCU byte order, and not a cunning plan to obfuscate things.*
+
 This finding enables us to write a function that given the S/N outputs the XOR-Key:
 
 ``` c++
