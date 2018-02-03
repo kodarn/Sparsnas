@@ -85,12 +85,15 @@ Here in DspectrumGUI we see the binary stream and the "Raw Binary To Hex" conver
 
 ![Mapping the values from DspectrumGUI to the Texas Instruments packet format](Docs/12.Mapping.the.values.from.DspectrumGUI.to.the.receivers.defined.paket.format.png?raw=true "Mapping the values from DspectrumGUI to the Texas Instruments packet format")
 
+### Verifing our work so far
+
 We now want to verify that our analysis is correct. We do this by looking up the CRC-algorithm in the Texas Instruments documentation and test our values:
 
 ![Look up the CRC algorithm used in the Texas Instruments documentation and test the values](Docs/13.Look.up.the.CRC.algorithm.used.in.TI-docs.and.test.the.values.png?raw=true "Look up the CRC algorithm used in the Texas Instruments documentation and test the values")
 
 We do a quick implementation of the algorithm in an online C++ compiler/debugger environment, and when executing it we end up with "crc checksum: 0x1204" which matches the expected crc value.
 
+### Use Yard Stick One with RfCat to capture (demodulated) packets
 We can now go on to the next step in the analysis which is recording more data. Now since the sender and receiver are part of the Texas Instruments family CCxxxx, we use a usb hardware dongle called ["Yard Stick One"](https://greatscottgadgets.com/yardstickone/). It consists of a CC1111 chip which can be controlled using the Python-library RfCat.
 
 To start doing this, we need to feed the things we have seen so far in the analysis into the CC1111-tranceiver. The screen below demonstrates how to retrieve all the necessary values.
@@ -332,9 +335,11 @@ In the first experiment, we isolate the sensor in total darkness (using some bla
         * Power-cycling the sensors' battery, will make the sequences repeat *exactly* as the previous testrun.
         -> This makes our analysis much more doable.
 
+### Review of how XOR works
+
 * We concluded earlier that it is likely that we're dealing with some sort of XOR-obfuscation. Therefore; it is a good time to review the characteristics of the XOR-operation (denoted with the ^ character). Some handy facts:
 
-    * Fact 01: Any byte ^ 0x00 will result in the original value. That is, 0xAA ^ 0x00 = 0xAA. We can use this fact when identifying counters which starts from zero and then increases. Lets say we have a 32-bit counter (i.e. 4 bytes) which we find it reasonably that is starts from zero, but is XOR'ed with an unknown key:
+    * **Fact 01:** Any `byte ^ 0x00` will result in the original value. That is, `0xAA ^ 0x00 = 0xAA`. We can use this fact when identifying counters which starts from zero and then increases. Lets say we have a 32-bit counter (i.e. 4 bytes) which we find it reasonably that is starts from zero, but is XOR'ed with an unknown key:
 
     | Packet ID  | Clear text before send | XOR'ed data read in the air  |
     | ---------- |:----------------------:| -----:|
@@ -344,9 +349,9 @@ In the first experiment, we isolate the sensor in total darkness (using some bla
     | packet 04  | 00 00 00 03 | 11 22 33 47 |
     | packet 05  | 00 00 00 04 | 11 22 33 40 |
 
-    * Knowing that a number xor'ed with 0x00 results in the original value, we can conclude that the unknown XOR-key for the packets above is 11 22 33 44.
+    * Knowing that a number xor'ed with `0x00` results in the original value, we can conclude that the unknown XOR-key for the packets above is `11 22 33 44`.
 
-    * Fact 02: How XOR works when dealing with increasing value series in relation to each other. Consider the following set of values:
+    * **Fact 02:** How XOR works when dealing with increasing value series in relation to each other. Consider the following set of values:
 ```
     | Packet ID  | In the air  | Packet 01 XOR with Packet 0* | Packet 01   ^ Current Val = Unscrambled Cnt
     | ---------- |:-----------:| ----------------------------:| -------------------------------------------
@@ -583,6 +588,7 @@ To summarize what we have found out of the packet content:
 | d3       | At present, it is hard to make something of it. | 
 | Crc16    | The standard Texas Instruments Crc16 | 
 
+### Writing the packet decoder
 
 This enables us to write a small and simple Python-script to decode the signal:
 
@@ -632,7 +638,7 @@ There might be some relationship between S/N and the XOR-Key. What if we could f
 
     S/N -----> secret operation ----> XOR-Key
 
-Can you see any trends or patterns? :wink: Here we must try many different approaches, which requires scrapping many ideas along the way (e.g. [this](Docs/Pattern1.png), [this](Docs/Pattern2.png), and so on...). However, observe how X2 looks like an increasing counter, and at the same time is enclosed by X1 & X3. This is an indication that we *might be* dealing with some sort of column permutation. After changing column order several times we end up with swapping X2 & X3, and X4 & X5 which is illustrated below. In hope of finding some patterns, we attempt to subtract the column values...
+Can you see any trends or patterns? :wink: Here we must try many different approaches, which requires scrapping many ideas along the way (e.g. [this](Docs/Pattern1.png), [this](Docs/Pattern2.png), and so on...). However, observe how `X2` looks like an increasing counter, and at the same time is enclosed by `X1` & `X3`. This is an indication that we *might be* dealing with some sort of column permutation. After changing column order several times we end up with swapping `X2 & X3`, and `X4 & X5` which is illustrated below. In hope of finding some patterns, we attempt to subtract the column values...
 
 ```
 | S/N          | S/N (in hex) | XOR-Key        | PemutatedXor - S/N      = Hopefully some pattern
