@@ -686,7 +686,7 @@ int main()
     // Generate XOR-Keys for a whole range of devices
     for (uint32_t i = 400000000; i < 400999999; i++)
     {
-        printf("Serial: %u    XOR-Key: ");
+        printf("Serial: %u    XOR-Key: ", i);
         GenerateXorKey(i);
         printf("\n");
     }
