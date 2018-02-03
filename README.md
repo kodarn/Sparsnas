@@ -679,10 +679,17 @@ void GenerateXorKey(uint32_t SerialNumber)
 
 int main()
 {
+    // Generate XOR-Key for a specific device
     uint32_t SerialNumber = 0x17E02449; // Serial: 400 565 321
-
     GenerateXorKey(SerialNumber);
 
+    // Generate XOR-Keys for a whole range of devices
+    for (uint32_t i = 400000000; i < 400999999; i++)
+    {
+        printf("Serial: %u    XOR-Key: ");
+        GenerateXorKey(i);
+        printf("\n");
+    }
     return 0;
 }
 ```
