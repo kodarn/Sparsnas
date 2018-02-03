@@ -634,7 +634,7 @@ Pay attention to the serial number (S/N) and the XOR-Key.
    Column names: S1 S2 S3 S4    X1 X2 X3 X4 X5
 ```
 
-There might be some relationship between S/N and the XOR-Key. What if we could formulate it as:
+One thing we can spot quite easily is that the `ID` column matches the last byte in the serial number `S4`. But more importantly, imagine if there were some relationship between S/N and the XOR-Key. What if we could formulate it as:
 
     S/N -----> secret operation ----> XOR-Key
 
