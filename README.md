@@ -1,4 +1,37 @@
-# Sparsnäs
+# IKEA Sparsnäs
+
+<!-- TOC -->
+
+- [IKEA Sparsnäs](#ikea-sparsn%C3%A4s)
+- [Introduction](#introduction)
+    - [The sending sensor](#the-sending-sensor)
+- [Radio Signal Analysis](#radio-signal-analysis)
+    - [Recording the signal](#recording-the-signal)
+    - [Open the recorded signal file in a graphical interface for analysis](#open-the-recorded-signal-file-in-a-graphical-interface-for-analysis)
+    - [Verifing our work so far](#verifing-our-work-so-far)
+    - [Use Yard Stick One with RfCat to capture packets](#use-yard-stick-one-with-rfcat-to-capture-packets)
+- [Packet content analysis](#packet-content-analysis)
+    - [Constants](#constants)
+    - [Variables](#variables)
+    - [Led blink helper tool](#led-blink-helper-tool)
+    - [Experiment 1: Finding counters](#experiment-1-finding-counters)
+        - [Review of how XOR works](#review-of-how-xor-works)
+        - [Applying what we now know about XOR to our own data](#applying-what-we-now-know-about-xor-to-our-own-data)
+        - [Look for repetitions in the XOR-data](#look-for-repetitions-in-the-xor-data)
+    - [Experiment 2: Controlling input data](#experiment-2-controlling-input-data)
+        - [Initial observations](#initial-observations)
+        - [Power cycling](#power-cycling)
+        - [Figuring out the last byte in the XOR-key](#figuring-out-the-last-byte-in-the-xor-key)
+        - [Default value assumption](#default-value-assumption)
+    - [Summary of the packet content analysis](#summary-of-the-packet-content-analysis)
+        - [The XOR-Key algorithm](#the-xor-key-algorithm)
+        - [Writing the packet decoder](#writing-the-packet-decoder)
+    - [Finding the XOR-Key for any device](#finding-the-xor-key-for-any-device)
+- [Ideas for the future](#ideas-for-the-future)
+
+<!-- /TOC -->
+
+# Introduction
 
 Ikea Sparsnäs is an energy monitor which aim is to monitor electricity usage. It consists of two parts; a sensor and a display:
 
@@ -38,7 +71,7 @@ This text will not go into the details on how to install the software. This text
 
 If you have never worked with signal analysis before, you can check out Mike Ossmann's introduction tutorials on the Yard Stick One: [Part 1](https://www.youtube.com/watch?v=eVqIe3na_Zk) and [Part 2](https://www.youtube.com/watch?v=vf38-8LbDuw).
 
-### Open the recorded signal file in a graphical interface for analysis
+## Open the recorded signal file in a graphical interface for analysis
 
  There are many different techniques and softwares for doing signal analysis. Here we will be using [Inspectrum](https://github.com/miek/inspectrum) and [DspectrumGUI](https://github.com/tresacton/dspectrumgui).
 
@@ -85,7 +118,7 @@ Here in DspectrumGUI we see the binary stream and the "Raw Binary To Hex" conver
 
 ![Mapping the values from DspectrumGUI to the Texas Instruments packet format](Docs/12.Mapping.the.values.from.DspectrumGUI.to.the.receivers.defined.paket.format.png?raw=true "Mapping the values from DspectrumGUI to the Texas Instruments packet format")
 
-### Verifing our work so far
+## Verifing our work so far
 
 We now want to verify that our analysis is correct. We do this by looking up the CRC-algorithm in the Texas Instruments documentation and test our values:
 
@@ -93,7 +126,7 @@ We now want to verify that our analysis is correct. We do this by looking up the
 
 We do a quick implementation of the algorithm in an online C++ compiler/debugger environment, and when executing it we end up with "crc checksum: 0x1204" which matches the expected crc value.
 
-### Use Yard Stick One with RfCat to capture (demodulated) packets
+## Use Yard Stick One with RfCat to capture packets
 We can now go on to the next step in the analysis which is recording more data. Now since the sender and receiver are part of the Texas Instruments family CCxxxx, we use a usb hardware dongle called ["Yard Stick One"](https://greatscottgadgets.com/yardstickone/). It consists of a CC1111 chip which can be controlled using the Python-library RfCat.
 
 To start doing this, we need to feed the things we have seen so far in the analysis into the CC1111-tranceiver. The screen below demonstrates how to retrieve all the necessary values.
@@ -231,10 +264,10 @@ When we run the script and start to get some data, we quickly identify that the 
 
 ![First attempt to look for patterns in packet content](Docs/17.First.attempt.to.look.for.patterns.in.packet.content.png?raw=true "First attempt to look for patterns in packet content")
 
-# Packet content Analysis
+# Packet content analysis
 At this point, we know nothing of the internal packet layout, but we can start to identify some patterns. This is a creative process which can be quite time consuming. First we need to list possible entities that may, or not may, be in the Data Field-part of the signal.
 
-### Constants
+## Constants
 
  * Variable identifiers (such as data for variable X is always prepended with the constant Y)
  * Length fields (packet length, length of individual fields in the packet, etc)
@@ -242,7 +275,7 @@ At this point, we know nothing of the internal packet layout, but we can start t
  * Sender identifiers (addresses, serials, hardware or software versions/revisions)
  * etc
 
-### Variables
+## Variables
 
  * Timestamps
  * Things we (in this case) see on the display
@@ -557,7 +590,7 @@ These values match what we have seen on the receiving display, and thus we can c
 Knowing the scrambling scheme, we only need to capture the **first packet after power-cycling** the sensor. This will enable us to determine the XOR-key as described below. We also attempt to rename the columns:
 
 ![Packet Analysis Summary](Docs/PacketAnalysisSummary.png?raw=true "Packet Analysis Summary")
-### Algorithm:
+### The XOR-Key algorithm
 1. Capture the first packet after power cycling the sensor.
 2. Copy the content from the "PulseCnt" column.
 3. Take the last byte from the "AvgTime" column and XOR it with ``0xFF``. Then append the result as the last byte in our XOR-Key.
@@ -596,7 +629,7 @@ This enables us to write a small and simple Python-script to decode the signal:
 
 The source code can be found [here](Receiver.using.RfCat/sparsnas_rfcat.py).
 
-## Identifying patterns when comparing individual devices
+## Finding the XOR-Key for any device
 
 I took the opportunity to shop when there was a sale at the local store. 
 
