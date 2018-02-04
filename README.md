@@ -36,6 +36,7 @@
 Ikea Sparsnäs is an energy monitor which aim is to monitor electricity usage. It consists of two parts; a sensor and a display:
 
 ![Introduction to IKEA Sparsnas](Docs/Sparsnas.intro.png?raw=true "Introduction to IKEA Sparsnas")
+![Introduction to IKEA Sparsnas - RF](Docs/Sparsnas.intro2.png?raw=true "Introduction to IKEA Sparsnas- RF")
 
 It uses a Texas Instruments CC115L transmitter, and the display-enabled receiver uses a Texas Instruments CC113L.
 
