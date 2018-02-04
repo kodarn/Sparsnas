@@ -446,7 +446,7 @@ It aligns perfectly, which strengthens our assumption. So, the assumption is now
 
 ## Experiment 2: Controlling input data
 ![Experiment 2](Docs/Experiment2.jpg?raw=true "Experiment 2")
-Next up is to use our Arduino-based "Led blink helper tool" we built earlier. We remove the black electrical tape and attach the sensor to the led on the breadboard. Looking at the packet dump above we can very easily conclude that the sensor sends one packet every 15'th second. If we configure our helper-tool to blink once every minute, we would have four packets per blink. (To reduce space I have removed duplicate 'NewCnt' packets. That's why the 'Cnt' & 'PCnt' columns aren't sequential.)
+Next up is to use our Arduino-based "Led blink helper tool" we built earlier. We remove the black electrical tape and attach the sensor to the led on the breadboard. Looking at the packet dump above we can very easily conclude that the sensor sends one packet every 15'th second. If we configure our helper-tool to blink once every minute, we would have four packets per blink. (To reduce space I have removed duplicate 'NewCnt' packets. That's why the 'Cnt' & XOR-'PCnt' columns aren't sequential.)
 
 ```
 Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
@@ -483,7 +483,7 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
           |-5-bytes-||--5-bytes-| |-5-bytes-|
 ```
 The first packet is identical to the one previous to the power cycling. Now, having determined that the `NewCnt` column is a counter, and its being reset on boot, we can make the assumption that `NewCnt` starts with the value zero. We can test if this assumption is reasonably.
-Remember what we stated in "Fact 01" earlier, that is, ``0xAA ^ 0x00 = 0xAA``. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value `d3` remains to be figured out. Enough, lets test our assumption. (Again; To reduce space I have removed duplicate 'NewCnt' packets. That's why the 'Cnt' & 'PCnt' columns aren't sequential.)
+Remember what we stated in "Fact 01" earlier, that is, ``0xAA ^ 0x00 = 0xAA``. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value `d3` remains to be figured out. Enough, lets test our assumption. (Again; To reduce space I have removed duplicate 'NewCnt' packets. That's why the 'Cnt' & XOR-'PCnt' columns aren't sequential.)
 
 ```
 Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16      Xor-Key      NewCnt      Result
