@@ -483,7 +483,7 @@ Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16
           |-5-bytes-||--5-bytes-| |-5-bytes-|
 ```
 The first packet is identical to the one previous to the power cycling. Now, having determined that the `NewCnt` column is a counter, and its being reset on boot, we can make the assumption that `NewCnt` starts with the value zero. We can test if this assumption is reasonably.
-Remember what we stated in "Fact 01" earlier, that is, ``0xAA ^ 0x00 = 0xAA``. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value `d3` remains to be figured out. Enough, lets test our assumption:
+Remember what we stated in "Fact 01" earlier, that is, ``0xAA ^ 0x00 = 0xAA``. This would mean that we have the have the 4 first bytes XOR-key if our assumption is correct. The remaining value `d3` remains to be figured out. Enough, lets test our assumption. (Again; To reduce space I have removed duplicate 'NewCnt' packets. That's why the 'Cnt' column isn't sequential.)
 
 ```
 Len ID Cnt Fix Fixed    PCnt Data NewCnt      Crc16      Xor-Key      NewCnt      Result
