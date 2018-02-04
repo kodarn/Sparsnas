@@ -526,7 +526,7 @@ The first and last values (``17`` & ``d3``) have been static during our whole an
   * ID     - Seems to be a sender ID of some sort
   * Cnt    - A 8-bit packet counter, wrapping at 0x7F (which makes it 7-bits actually)
   * Fix    - Some sort of flag/status column with true/false like properies stating if the sensor is detecting any blinks.
-  * Fixed  - 5 bytes of static data. At present, it is hard to make something of it. (See note on 'PCnt' column description.)
+  * Fixed  - 5 bytes of static data. At present, it is hard to make something of it.
   * PCnt   - A 16-bit packet counter.
   * Data   - Only modified when we prove led blinks, so it should have something to do with the measurement process.
   * NewCnt - A 32-bit led blink counter. Increases by one for every blink.
