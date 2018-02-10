@@ -864,7 +864,7 @@ To the far right in the DSView-window the SPI-decoder dumps all the decoded MOSI
 
 SPI    MOSI  Comment
 ===    ====  ==================================================================
-  0    30    0x39: Chip Reset
+  0    30    0x30: SRES (Reset Chip)
   1    00    0x00: IOCFG2 - GDO2 Output Pin Configuration (Table 5-17)
   2    0B          -> 0x0B
   3    01    0x01: IOCFG1 - GDO1 Output Pin Configuration (Table 5-18)
