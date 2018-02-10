@@ -1,0 +1,194 @@
+Table 5-13. Command Strobes
+Table 5-14. Configuration Registers Overview
+Table 5-15. Status Registers Overview
+
+
+#-----------------------------------------------------------------------------
+# Setup registers
+#
+# Time = 5,3 sec
+#
+#-----------------------------------------------------------------------------
+
+SPI    MOSI  Comment
+===    ====  ==================================================================
+  0    30    0x39: Chip Reset
+  1    00    0x00: IOCFG2 - GDO2 Output Pin Configuration (Table 5-17)
+  2    0B          -> 0x0B
+  3    01    0x01: IOCFG1 - GDO1 Output Pin Configuration (Table 5-18)
+  4    2E          -> 0x2E
+  5    02    0x02: IOCFG0 - GDO0 Output Pin Configuration (Table 5-19)
+  6    06          -> 0x06
+  7    03    0x03: FIFOTHR - TX FIFO Thresholds (Table 5-20)
+  8    47           -> 33 bytes in TX FIFO
+  9    04    0x04: SYNC1 - Sync Word, High Byte (Table 5-21)
+ 10    D2          -> 0xD2
+ 11    05    0x05: SYNC0 - Sync Word, Low Byte (Table 5-22)
+ 12    01          -> 0x01
+ 13    06    0x06: PKTLEN - Packet Length (Table 5-23)
+ 14    28           -> 0x28
+ 15    07    0x07: Not used
+ 16    8C 
+ 17    08    0x08: PKTCTRL0 - Packet Automation Control (Table 5-24)
+ 18    05          -> Normal mode, use TX FIFO
+                   -> CRC calculation enabled
+                   -> Variable packet length mode. Packet length configured
+                      by the first byte written to the TX FIFO
+ 19    09    0x09: Not used
+ 20    00 
+ 21    0A    0x0A: CHANNR - Channel Number (Table 5-25)
+ 22    00          -> 0x00
+ 23    0B    0x0B: Not used
+ 24    06 
+ 25    0C    0x0C: FSCTRL0 - Frequency Synthesizer Control (Table 5-26)
+ 26    00          -> 0x00
+ 27    0D    0x0D: FREQ2 - Frequency Control Word, High Byte (Table 5-27)
+ 28    21          -> 0x21 
+ 29    0E    0x0E: FREQ1 - Frequency Control Word, Middle Byte (Table 5-28)
+ 30    62          -> 0x62
+ 31    0F    0x0F: FREQ0 - Frequency Control Word, Low Byte (Table 5-29)
+ 32    76          -> 0x76
+ 33    10    0x10: MDMCFG4 - Modem Configuration (Table 5-30)
+ 34    CA          -> 0xCA 
+                   -> The exponent of the user specified symbol rate
+ 35    11    0x11: MDMCFG3 - Modem Configuration (Table 5-31)
+ 36    83          -> 0x83
+                   -> Symbol rate defined by the specified mantissa
+ 37    12    0x12: MDMCFG2 - Modem Configuration (Table 5-32)
+ 38    11          -> 0x11
+                   -> Bit 4 is set     => GFSK Modulation
+                   -> Bit 3 is not set => Manchester encoding disabled
+                   -> Bit 1 is set     => 16-bits sync word
+ 39    13    0x13: MDMCFG1 - Modem Configuration (Table 5-33)
+ 40    22          -> 0x22
+                   -> Bit 5 is set     => Number of preamble bytes is 4
+                   -> Bit 1 is set     => Channel spacing exponent
+ 41    14    0x14: MDMCFG0 - Modem Configuration (Table 5-34)
+ 42    F8          -> 0xF8
+                   -> Channel spacing mantissa
+ 43    15    0x15: DEVIATN - Modem Deviation Setting (Table 5-35)
+ 44    35          -> 0x35
+                   -> Mantissa & Exponent for deviation
+ 45    16    0x016: Not used
+ 46    07 
+ 47    17    0x17: MCSM1 - Main Radio Control State Machine Configuration (Table 5-36)
+ 48    30          -> 0x30
+ 49    18    0x18: MCSM0 - Main Radio Control State Machine Configuration (Table 5-37)
+ 50    18          -> 0x18
+ 51    19    0x19: Not used
+ 52    17 
+ 53    1A    0x1A: Not used
+ 54    6C 
+ 55    1B    0x1B: Not used
+ 56    43 
+ 57    1C    0x1C: Not used
+ 58    40 
+ 59    1D    0x1D: Not used
+ 60    91 
+ 61    1E    0x1E: Not used
+ 62    87 
+ 63    1F    0x1F: Not used
+ 64    6B 
+ 65    20    0x20: RESERVED (Table 5-38)
+ 66    FB 
+ 67    21    0x21: Not used
+ 68    56 
+ 69    22    0x22: FREND0 - Front End TX Configuration (Table 5-39)
+ 70    10          -> 0x10
+ 71    23    0x23: FSCAL3 - Frequency Synthesizer Calibration (Table 5-40)
+ 72    E9          -> 0xE9
+ 73    24    0x24: FSCAL2 - Frequency Synthesizer Calibration (Table 5-41)
+ 74    2A          -> 0x2A
+ 75    25    0x25: FSCAL1 - Frequency Synthesizer Calibration (Table 5-42)
+ 76    00          -> 0x00
+ 77    26    0x26: FSCAL0 - Frequency Synthesizer Calibration (Table 5-43)
+ 78    1F          -> 0x1F
+ 79    27    0x27: Not used
+ 80    41 
+ 81    28    0x28: Not used
+ 82    00 
+ 83    29    0x29: RESERVED (Table 5-44)
+ 84    59 
+ 85    2A    0x2A: RESERVED (Table 5-45)
+ 86    7F 
+ 87    2B    0x2B: RESERVED (Table 5-46)
+ 88    3F 
+ 89    2C    0x2C: TEST2 - Various Test Settings (Table 5-47)
+ 90    81          -> 0x81
+ 91    2D    0x2D: TEST1 - Various Test Settings (Table 5-48)
+ 92    35          -> 0x35
+ 93    2E    0x2E: TEST0 - Various Test Settings (Table 5-49)
+ 94    09          -> 0x09
+ 95    09    0x09: Not used
+ 96    00 
+ 97    7E    0x3E: (Burst bit set, write at PATABLE Access)
+ 98    C0          -> logic 0 power level 
+ 99    36          -> logic 1 power level
+100    F1  0x31: (Burst bit set, READ bit set, i.e. Read chip version number)
+101    00         
+102    39  0x39: SPWD ==> Enter power down mode when CSn goes high.
+
+#-----------------------------------------------------------------------------
+# Sending packet 1
+#
+# Time = 18,8 sec
+#
+#-----------------------------------------------------------------------------
+
+SPI    MOSI  Comment
+===    ====  ==================================================================
+103    36    SIDLE ==> Enter IDLE state 
+104    7F    Burst access to TX FIFO
+105    11    ----
+106    49        \
+107    00         |
+108    07         |
+109    0F         |
+110    A2         |
+111    76         |
+112    17         |
+113    0E          \        Len  ID  Cnt Status  Fixed    PCnt AvgTime PulseCnt    Crc16
+114    CF           >------ 11   49   00 070f    a276170e cfa2 8148    47cfa27ed3  _____
+115    A2          /        
+116    81         |
+117    48         |
+118    47         |
+119    CF         |
+120    A2         |
+121    7E        /
+122    D3    ----
+123    35    STX  ==> In IDLE state: Enable TX. Perform calibration first if MCSM0.FS_AUTOCAL=1.
+124    39    SPWD ==> Enter power down mode when CSn goes high.
+
+#-----------------------------------------------------------------------------
+# Sending packet 2
+#
+# Time = 33,8 sec
+#
+#-----------------------------------------------------------------------------
+
+SPI    MOSI  Comment
+===    ====  ==================================================================
+125    36    SIDLE ==> Enter IDLE state 
+126    7F    Burst access to TX FIFO
+127    11    ----
+128    49        \
+129    01         |
+130    07         |
+131    0F         |
+132    A2         |
+133    76         |
+134    17         |
+135    0E          \        Len  ID  Cnt Status  Fixed    PCnt AvgTime PulseCnt    Crc16
+136    CF           >------ 11   49   01 070f    a276170e cfa3 8148    47cfa27ed3  _____
+137    A3          /
+138    81         |
+139    48         |
+140    47         |
+141    CF         |
+142    A2         |
+143    7E        /
+144    D3    ----
+145    35    STX  ==> In IDLE state: Enable TX. Perform calibration first if MCSM0.FS_AUTOCAL=1.
+146    39    SPWD ==> Enter power down mode when CSn goes high.
+

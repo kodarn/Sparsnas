@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE configuration SYSTEM "C:/Program Files (x86)/Texas Instruments/SmartRF Tools/SmartRF Studio 7/config/xml/configdata.dtd"[]>
+<dcpanelconfiguration>
+    <Devicename>CC115L</Devicename>
+    <Description>Saved configuration data</Description>
+    <registersettings>
+        <Register>
+            <Name>CHANNR</Name>
+            <Value>0x0a</Value>
+        </Register>
+        <Register>
+            <Name>DEVIATN</Name>
+            <Value>0x35</Value>
+        </Register>
+        <Register>
+            <Name>FIFOTHR</Name>
+            <Value>0x47</Value>
+        </Register>
+        <Register>
+            <Name>FREQ0</Name>
+            <Value>0x76</Value>
+        </Register>
+        <Register>
+            <Name>FREQ1</Name>
+            <Value>0x62</Value>
+        </Register>
+        <Register>
+            <Name>FREQ2</Name>
+            <Value>0x21</Value>
+        </Register>
+        <Register>
+            <Name>FSCAL0</Name>
+            <Value>0x1f</Value>
+        </Register>
+        <Register>
+            <Name>FSCAL1</Name>
+            <Value>0x00</Value>
+        </Register>
+        <Register>
+            <Name>FSCAL2</Name>
+            <Value>0x2a</Value>
+        </Register>
+        <Register>
+            <Name>FSCAL3</Name>
+            <Value>0xe9</Value>
+        </Register>
+        <Register>
+            <Name>IOCFG0</Name>
+            <Value>0x06</Value>
+        </Register>
+        <Register>
+            <Name>IOCFG2</Name>
+            <Value>0x0b</Value>
+        </Register>
+        <Register>
+            <Name>MCSM0</Name>
+            <Value>0x18</Value>
+        </Register>
+        <Register>
+            <Name>MDMCFG2</Name>
+            <Value>0x11</Value>
+        </Register>
+        <Register>
+            <Name>MDMCFG3</Name>
+            <Value>0x83</Value>
+        </Register>
+        <Register>
+            <Name>MDMCFG4</Name>
+            <Value>0xca</Value>
+        </Register>
+        <Register>
+            <Name>PA_TABLE0</Name>
+            <Value>0xc0</Value>
+        </Register>
+        <Register>
+            <Name>PA_TABLE1</Name>
+            <Value>0x36</Value>
+        </Register>
+        <Register>
+            <Name>PKTCTRL0</Name>
+            <Value>0x05</Value>
+        </Register>
+        <Register>
+            <Name>PKTLEN</Name>
+            <Value>0x28</Value>
+        </Register>
+        <Register>
+            <Name>RESERVED_0x20</Name>
+            <Value>0xfb</Value>
+        </Register>
+        <Register>
+            <Name>SYNC0</Name>
+            <Value>0x01</Value>
+        </Register>
+        <Register>
+            <Name>SYNC1</Name>
+            <Value>0xd2</Value>
+        </Register>
+        <Register>
+            <Name>TEST0</Name>
+            <Value>0x09</Value>
+        </Register>
+        <Register>
+            <Name>TEST1</Name>
+            <Value>0x35</Value>
+        </Register>
+        <Register>
+            <Name>TEST2</Name>
+            <Value>0x81</Value>
+        </Register>
+    </registersettings>
+    <dcpanel>
+        <Property name="m_chkRegView" role="44">2</Property>
+        <Property name="m_chkCmdView" role="44">0</Property>
+        <Property name="m_chkRfParameters" role="44">2</Property>
+        <Property name="m_cmbUserMode" role="46">0</Property>
+        <Property name="m_easyModeSettings" role="33">-1</Property>
+        <Property name="m_typicalSettings" role="33">-1</Property>
+        <Property name="m_testFuncPanel" role="37">0</Property>
+    </dcpanel>
+    <rfparameters>
+        <Property name="Xtal Frequency" role="46">26.000000</Property>
+    </rfparameters>
+    <conttx>
+        <Property name="m_rbtModulated" role="45">1</Property>
+        <Property name="m_rbtUnmodulated" role="45">0</Property>
+        <Property name="m_cmbDataFormat" role="46">-1</Property>
+        <Property name="m_chkFreqSweep" role="44">0</Property>
+        <Property name="m_chkChanSweep" role="44">0</Property>
+    </conttx>
+    <packettx>
+        <Property name="m_edtPayloadSize" role="42">30</Property>
+        <Property name="m_edtPacketCount" role="42">100</Property>
+        <Property name="m_edtPacketCountEsy" role="42">100</Property>
+        <Property name="m_edtRandomPacketData" role="42">13 0d 89 0a 1c db ae 32 20 9a 50 ee 40 78 36 fd 12 49 32 f6 9e 7d 49 dc ad 4f 14 f2 </Property>
+        <Property name="m_edtPacketData" role="42"></Property>
+        <Property name="m_edtAccessAddress" role="42"></Property>
+        <Property name="m_edtDeviceAddress" role="42"></Property>
+        <Property name="m_chkAddSeqNbr" role="44">2</Property>
+        <Property name="m_chkInfinite" role="44">0</Property>
+        <Property name="m_chkInfiniteEsy" role="44">0</Property>
+        <Property name="m_rbtRandom" role="45">1</Property>
+        <Property name="m_rbtText" role="45">0</Property>
+        <Property name="m_rbtHex" role="45">0</Property>
+        <Property name="m_chkAdvanced" role="44">0</Property>
+    </packettx>
+    <commandpanel>
+        <Property name="m_chkInsertLength" role="44">0</Property>
+        <Property name="m_edtTxFifo" role="42"></Property>
+        <Property name="m_edtRxFifo" role="42"></Property>
+        <Property name="m_cmbInstrInput" role="46">-1</Property>
+    </commandpanel>
+</dcpanelconfiguration>

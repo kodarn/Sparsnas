@@ -27,6 +27,13 @@
         - [The XOR-Key algorithm](#the-xor-key-algorithm)
         - [Writing the packet decoder](#writing-the-packet-decoder)
     - [Finding the XOR-Key for any device](#finding-the-xor-key-for-any-device)
+        - [Applying the XOR-Keys to all our sensors](#applying-the-xor-keys-to-all-our-sensors)
+- [SPI signal analysis](#spi-signal-analysis)
+    - [Soldering probes](#soldering-probes)
+    - [Recording the signals](#recording-the-signals)
+    - [Studying the CC115L datasheet](#studying-the-cc115l-datasheet)
+    - [Decoding the SPI stream](#decoding-the-spi-stream)
+    - [SmartRF Studio](#smartrf-studio)
 - [Ideas for the future](#ideas-for-the-future)
 
 <!-- /TOC -->
@@ -737,11 +744,353 @@ int main()
 ```
 ![Convert serial to XOR-Key](Docs/Serial2Xor.png?raw=true "Convert serial to XOR-Key")
 
+### Applying the XOR-Keys to all our sensors
+This is what the first captured packets looked like:
+```
+| S/N          | Len | ID | Cnt | Status | Fixed    | PCnt | AvgTime | PulseCnt | d3 | Crc16 | XOR-Key (applying our algorithm) |
+| -----------: | :-- | :- | :-- | :----- | :------- | :--- | :------ | :------- | :- | :---- | :------------------------------- |
+| 400 565 321  | 11  | 49 | 00  | 070f   | a276170e | cfa2 | 8148    | 47cfa27e | d3 | f80d  | 47 cf a2 7e b7                   |
+| 400 595 807  | 11  | 5f | 00  | 070f   | a29d3918 | d0a2 | 6bd1    | 47d0a294 | 4a | b472  | 47 d0 a2 94 2e                   |
+| 400 628 220  | 11  | fc | 00  | 070f   | a23838bb | d0a2 | ce52    | 47d0a231 | c9 | 40d8  | 47 d0 a2 31 ad                   |
+| 400 629 153  | 11  | a1 | 00  | 070f   | a2df29e6 | d0a2 | 294f    | 47d0a2d6 | d4 | a250  | 47 d0 a2 d6 b0                   |
+| 400 630 087  | 11  | 47 | 00  | 070f   | a2752900 | d0a2 | 834b    | 47d0a27c | d0 | b906  | 47 d0 a2 7c b4                   |
+| 400 631 291  | 11  | fb | 00  | 070f   | a23918bc | d0a2 | cf46    | 47d0a230 | dd | 7dd3  | 47 d0 a2 30 b9                   |
+| 400 673 174  | 11  | 96 | 00  | 070f   | a2c119d1 | d1a2 | 34a3    | 47d1a2cb | 38 | ab5f  | 47 d1 a2 cb 5c                   |
+| 400 710 424  | 11  | 18 | 00  | 070f   | a247395f | d1a2 | b211    | 47d1a24d | 8a | 3049  | 47 d1 a2 4d ee                   |
+                                  \-------------/\--------------/      \-----------/
+                                       XOR Key        XOR Key             XOR-Key
+```
+... and this is what it looked like after we applied the XOR-key:
+```
+| S/N          | Len | ID | Cnt | Status | Fixed    | PCnt | AvgTime | PulseCnt | d3 | Crc16 | XOR-Key (applying our algorithm) |
+| -----------: | :-- | :- | :-- | :----- | :------- | :--- | :------ | :------- | :- | :---- | :------------------------------- |
+| 400 565 321  | 11  | 49 | 00  | 400f   | a276170e | cfa2 | 8148    | 47cfa27e | d3 | f80d  | 47 cf a2 7e b7                   |
+| 400 595 807  | 11  | 5f | 00  | 400f   | a29d3918 | d0a2 | 6bd1    | 47d0a294 | 4a | b472  | 47 d0 a2 94 2e                   |
+| 400 628 220  | 11  | fc | 00  | 400f   | a23838bb | d0a2 | ce52    | 47d0a231 | c9 | 40d8  | 47 d0 a2 31 ad                   |
+| 400 629 153  | 11  | a1 | 00  | 400f   | a2df29e6 | d0a2 | 294f    | 47d0a2d6 | d4 | a250  | 47 d0 a2 d6 b0                   |
+| 400 630 087  | 11  | 47 | 00  | 400f   | a2752900 | d0a2 | 834b    | 47d0a27c | d0 | b906  | 47 d0 a2 7c b4                   |
+| 400 631 291  | 11  | fb | 00  | 400f   | a23918bc | d0a2 | cf46    | 47d0a230 | dd | 7dd3  | 47 d0 a2 30 b9                   |
+| 400 673 174  | 11  | 96 | 00  | 400f   | a2c119d1 | d1a2 | 34a3    | 47d1a2cb | 38 | ab5f  | 47 d1 a2 cb 5c                   |
+| 400 710 424  | 11  | 18 | 00  | 400f   | a247395f | d1a2 | b211    | 47d1a24d | 8a | 3049  | 47 d1 a2 4d ee                   |
+                                  \-------------/\--------------/      \-----------/
+                                       XOR Key        XOR Key             XOR-Key
+```
+
+# SPI signal analysis
+The microcontroller communicates with the transmitter using [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus). Initially, the microcontroller setup the transmitters radio settings by configuring a set of registers in the transmitter. If we can read these settings we could verify our Inspectrum analysis above. Infact, we could have benefitted from having this knowledge before we did the Inspectrum analysis.
+
+![Introduction to IKEA Sparsnas - RF](Docs/Sparsnas.intro2.png?raw=true "Introduction to IKEA Sparsnas- RF")
+
+## Soldering probes
+In a SPI setup, one participant is appointed master, and the other acts as slave. In this Sparsnäs setup, the microcontroller is Master and the CC115L-transmitter is Slave.
+
+SPI consists of four wires:
+  *  MOSI: Master -> Slave data
+  *  MISO: Master <- Slave data
+  *  SCLK: Clock
+  *  CSn:  Slave Select, used to enable the specific slave.
+
+First, we need to solder four probes to the board. We begin by gently scrubbing off the board-coating on top of the SPI wires. We then apply some solder on the exposed coppar wires. Next step is to prepare four coupling wires. We cut them in appropriate lengths and apply some solder to their ends. Finally, we solder the coupling wires to the board.
+
+![Solder coupling wires](LogicAnalyzer/400_565_321/01.Solder1.jpg?raw=true "Solder coupling wires")
+
+## Recording the signals
+
+Logic analyzers are a great tool to debug and analyze elektronics. Here we use a a logic analyzer called [DSLogic](http://www.dreamsourcelab.com/dslogic.html). They're available on [EBay](https://www.ebay.com/) or [BangGood](https://www.banggood.com/search/dslogic.html) etc. Connect the coupling wires to the analyzer, and connect the analyzer using a USB cable to your computer. Now, start the [DSView](http://www.dreamsourcelab.com/download.html) software, begin the recording process, and plug the batteries into the Sparsnäs-sensor. We record about 40 seconds of data, resulting with the following:
+
+![Connecting the logic analyzer](LogicAnalyzer/400_565_321/02.Solder2.jpg?raw=true "Connecting the logic analyzer")
+![Data recording](LogicAnalyzer/400_565_321/03.DSLogic.Overview.of.SPI.signals.png?raw=true "Data recording")
+
+Here we can see the four recorded signals in four separate channels (MOSI, MISO, CLK, CSn). The top channel, SPI, is generated by a 'decoder' in the DSView software.
+
+We can see three "spikes". They are:
+
+- The transmitter setup
+- Sending packet 01
+- Sending packet 02
+
+In order to make some sense the image, we must zoom into the image. However, before we can understand the details, we need to do some reading in the [CC115L datasheet](Docs/TexasInstruments.CC115L-RF.Transmitter.On.Sensor.pdf).
+
+
+## Studying the CC115L datasheet
+
+Reading datasheets can take some getting used to. But if you take your time they often make sense eventually.
+![CC115L datasheet SPI specification](LogicAnalyzer/400_565_321/04.Review.of.CC115L.SPI.interface.png?raw=true "CC115L datasheet SPI specification")
+Reading the datasheet we learn the following:
+ * All transfers on the SPI interface are
+done most significant bit first.
+* All transactions on the SPI interface start with a header byte containing:
+  * a R/W bit (0=Write, 1=Read)
+  * a burst access bit (B=1)
+  * a 6-bit address (A5–A0)
+* Registers with consecutive addresses can be accessed in an efficient way by setting the burst bit (B) in
+the header byte. The address bits (A5 - A0) set the start address in an internal address counter. This
+counter is incremented by one each new byte (every 8 clock pulses).
+* Single byte instructions to CC115L are called "Command Strobes"
+    * See Table 5-13 for a list of single-byte instructions
+* Writing to registers uses to bytes:
+  * Byte 1: Register address
+  * Byte 2: value
+  * See Table 5-14 for the list of registers available
+* Writing packet data to the transmitter in Burst-mode
+    * 0x7F: Burst access to TX FIFO
+    * Byte 1
+    * Byte 2
+    * ...
+    * Byte N
+
+## Decoding the SPI stream
+Equipped with this knowledge, we can decode the SPI-stream. We zoom in to the first SPI-packet burst, which is the setup of the transmitter. 
+![Setup of registers in the CC115L](LogicAnalyzer/400_565_321/05.DSLogic.Setup.Transmitter.png?raw=true "Setup of registers in the CC115L")
+
+Zooming in even further we see the beginning of the register setup. In the image you can observe `00, 0B` and `01, 2E` in green text. What that means is `Register00 = 0x0B`, `Register01=0x2E`. 
+
+![Start of the registers setup in the CC115L](LogicAnalyzer/400_565_321/06.DSLogic.Setup.Transmitter.png?raw=true "Start of the registers setup in the CC115L")
+We scroll to the right, to about 18,8 seconds into the recording. There we find the first data-packet being sent. Note the sequence `11` `49` `00` `07` `0F` `A2` `76`. This matches what we seen previously in the analyses. If you don't recall them, you may go up in the text to the XOR-analysis and check out the data sent in the first packet of the `400 565 321` sensor.
+
+![Sending the first packet](LogicAnalyzer/400_565_321/07.DSLogic.First.Packet.png?raw=true "Sending the first packet")
+
+To the far right in the DSView-window the SPI-decoder dumps all the decoded MOSI/MISO values. By clicking 'Export' in the gui we can save the values to `.csv`/`.txt`-files. Now, using what we learned from reading the CC115L-datasheet, we annotate the exported textfile as:
+
+```
+#-----------------------------------------------------------------------------
+# Setup registers
+#
+# Time = 5,3 sec
+#
+#-----------------------------------------------------------------------------
+
+SPI    MOSI  Comment
+===    ====  ==================================================================
+  0    30    0x39: Chip Reset
+  1    00    0x00: IOCFG2 - GDO2 Output Pin Configuration (Table 5-17)
+  2    0B          -> 0x0B
+  3    01    0x01: IOCFG1 - GDO1 Output Pin Configuration (Table 5-18)
+  4    2E          -> 0x2E
+  5    02    0x02: IOCFG0 - GDO0 Output Pin Configuration (Table 5-19)
+  6    06          -> 0x06
+  7    03    0x03: FIFOTHR - TX FIFO Thresholds (Table 5-20)
+  8    47           -> 33 bytes in TX FIFO
+  9    04    0x04: SYNC1 - Sync Word, High Byte (Table 5-21)
+ 10    D2          -> 0xD2
+ 11    05    0x05: SYNC0 - Sync Word, Low Byte (Table 5-22)
+ 12    01          -> 0x01
+ 13    06    0x06: PKTLEN - Packet Length (Table 5-23)
+ 14    28           -> 0x28
+ 15    07    0x07: Not used
+ 16    8C 
+ 17    08    0x08: PKTCTRL0 - Packet Automation Control (Table 5-24)
+ 18    05          -> Normal mode, use TX FIFO
+                   -> CRC calculation enabled
+                   -> Variable packet length mode. Packet length configured
+                      by the first byte written to the TX FIFO
+ 19    09    0x09: Not used
+ 20    00 
+ 21    0A    0x0A: CHANNR - Channel Number (Table 5-25)
+ 22    00          -> 0x00
+ 23    0B    0x0B: Not used
+ 24    06 
+ 25    0C    0x0C: FSCTRL0 - Frequency Synthesizer Control (Table 5-26)
+ 26    00          -> 0x00
+ 27    0D    0x0D: FREQ2 - Frequency Control Word, High Byte (Table 5-27)
+ 28    21          -> 0x21 
+ 29    0E    0x0E: FREQ1 - Frequency Control Word, Middle Byte (Table 5-28)
+ 30    62          -> 0x62
+ 31    0F    0x0F: FREQ0 - Frequency Control Word, Low Byte (Table 5-29)
+ 32    76          -> 0x76
+ 33    10    0x10: MDMCFG4 - Modem Configuration (Table 5-30)
+ 34    CA          -> 0xCA 
+                   -> The exponent of the user specified symbol rate
+ 35    11    0x11: MDMCFG3 - Modem Configuration (Table 5-31)
+ 36    83          -> 0x83
+                   -> Symbol rate defined by the specified mantissa
+ 37    12    0x12: MDMCFG2 - Modem Configuration (Table 5-32)
+ 38    11          -> 0x11
+                   -> Bit 4 is set     => GFSK Modulation
+                   -> Bit 3 is not set => Manchester encoding disabled
+                   -> Bit 1 is set     => 16-bits sync word
+ 39    13    0x13: MDMCFG1 - Modem Configuration (Table 5-33)
+ 40    22          -> 0x22
+                   -> Bit 5 is set     => Number of preamble bytes is 4
+                   -> Bit 1 is set     => Channel spacing exponent
+ 41    14    0x14: MDMCFG0 - Modem Configuration (Table 5-34)
+ 42    F8          -> 0xF8
+                   -> Channel spacing mantissa
+ 43    15    0x15: DEVIATN - Modem Deviation Setting (Table 5-35)
+ 44    35          -> 0x35
+                   -> Mantissa & Exponent for deviation
+ 45    16    0x016: Not used
+ 46    07 
+ 47    17    0x17: MCSM1 - Main Radio Control State Machine Configuration (Table 5-36)
+ 48    30          -> 0x30
+ 49    18    0x18: MCSM0 - Main Radio Control State Machine Configuration (Table 5-37)
+ 50    18          -> 0x18
+ 51    19    0x19: Not used
+ 52    17 
+ 53    1A    0x1A: Not used
+ 54    6C 
+ 55    1B    0x1B: Not used
+ 56    43 
+ 57    1C    0x1C: Not used
+ 58    40 
+ 59    1D    0x1D: Not used
+ 60    91 
+ 61    1E    0x1E: Not used
+ 62    87 
+ 63    1F    0x1F: Not used
+ 64    6B 
+ 65    20    0x20: RESERVED (Table 5-38)
+ 66    FB 
+ 67    21    0x21: Not used
+ 68    56 
+ 69    22    0x22: FREND0 - Front End TX Configuration (Table 5-39)
+ 70    10          -> 0x10
+ 71    23    0x23: FSCAL3 - Frequency Synthesizer Calibration (Table 5-40)
+ 72    E9          -> 0xE9
+ 73    24    0x24: FSCAL2 - Frequency Synthesizer Calibration (Table 5-41)
+ 74    2A          -> 0x2A
+ 75    25    0x25: FSCAL1 - Frequency Synthesizer Calibration (Table 5-42)
+ 76    00          -> 0x00
+ 77    26    0x26: FSCAL0 - Frequency Synthesizer Calibration (Table 5-43)
+ 78    1F          -> 0x1F
+ 79    27    0x27: Not used
+ 80    41 
+ 81    28    0x28: Not used
+ 82    00 
+ 83    29    0x29: RESERVED (Table 5-44)
+ 84    59 
+ 85    2A    0x2A: RESERVED (Table 5-45)
+ 86    7F 
+ 87    2B    0x2B: RESERVED (Table 5-46)
+ 88    3F 
+ 89    2C    0x2C: TEST2 - Various Test Settings (Table 5-47)
+ 90    81          -> 0x81
+ 91    2D    0x2D: TEST1 - Various Test Settings (Table 5-48)
+ 92    35          -> 0x35
+ 93    2E    0x2E: TEST0 - Various Test Settings (Table 5-49)
+ 94    09          -> 0x09
+ 95    09    0x09: Not used
+ 96    00 
+ 97    7E    0x3E: (Burst bit set, write at PATABLE Access)
+ 98    C0          -> logic 0 power level 
+ 99    36          -> logic 1 power level
+100    F1  0x31: (Burst bit set, READ bit set, i.e. Read chip version number)
+101    00         
+102    39  0x39: SPWD ==> Enter power down mode when CSn goes high.
+```
+
+```
+#-----------------------------------------------------------------------------
+# Sending packet 1
+#
+# Time = 18,8 sec
+#
+#-----------------------------------------------------------------------------
+
+SPI    MOSI  Comment
+===    ====  ==================================================================
+103    36    SIDLE ==> Enter IDLE state 
+104    7F    Burst access to TX FIFO
+105    11    ----
+106    49        \
+107    00         |
+108    07         |
+109    0F         |
+110    A2         |
+111    76         |
+112    17         |
+113    0E          \        Len  ID  Cnt Status  Fixed    PCnt AvgTime PulseCnt    Crc16
+114    CF           >------ 11   49   00 070f    a276170e cfa2 8148    47cfa27ed3  _____
+115    A2          /        
+116    81         |
+117    48         |
+118    47         |
+119    CF         |
+120    A2         |
+121    7E        /
+122    D3    ----
+123    35    STX  ==> In IDLE state: Enable TX. Perform calibration first if MCSM0.FS_AUTOCAL=1.
+124    39    SPWD ==> Enter power down mode when CSn goes high.
+```
+
+```
+#-----------------------------------------------------------------------------
+# Sending packet 2
+#
+# Time = 33,8 sec
+#
+#-----------------------------------------------------------------------------
+
+SPI    MOSI  Comment
+===    ====  ==================================================================
+125    36    SIDLE ==> Enter IDLE state 
+126    7F    Burst access to TX FIFO
+127    11    ----
+128    49        \
+129    01         |
+130    07         |
+131    0F         |
+132    A2         |
+133    76         |
+134    17         |
+135    0E          \        Len  ID  Cnt Status  Fixed    PCnt AvgTime PulseCnt    Crc16
+136    CF           >------ 11   49   01 070f    a276170e cfa3 8148    47cfa27ed3  _____
+137    A3          /
+138    81         |
+139    48         |
+140    47         |
+141    CF         |
+142    A2         |
+143    7E        /
+144    D3    ----
+145    35    STX  ==> In IDLE state: Enable TX. Perform calibration first if MCSM0.FS_AUTOCAL=1.
+146    39    SPWD ==> Enter power down mode when CSn goes high.
+```
+
+## SmartRF Studio
+We could look up exactly what each configured register value corresponds to in the CC115L datasheet. This will provide us with the best understanding of things. However, Texas Instruments develops a tool called SmartRF Studio. It is the recommended tool for configuring devices in the Texas CCxxxx-series. We can feed the register settings into this application to observe some of the details quite easliy:
+
+![SmartRF Studio](LogicAnalyzer/400_565_321/09.SmartRF.Studio.png?raw=true "SmartRF Studio")
+
+<table border=1 cellpadding=5 cellspacing=0>
+<caption>CC115L registers as sent by the MSP430G2433 MCU</caption>
+<tr><th>Name</th><th>Address</th><th>Value</th>
+<th>Description</th></tr><tr><td>IOCFG2<td>0x0000</td><td>0x0B</td><td>GDO2 Output Pin Configuration</td></tr>
+<tr><td>IOCFG0<td>0x0002</td><td>0x06</td><td>GDO0 Output Pin Configuration</td></tr>
+<tr><td>FIFOTHR<td>0x0003</td><td>0x47</td><td>TX FIFO Thresholds</td></tr>
+<tr><td>SYNC1<td>0x0004</td><td>0xD2</td><td>Sync Word, High Byte</td></tr>
+<tr><td>SYNC0<td>0x0005</td><td>0x01</td><td>Sync Word, Low Byte</td></tr>
+<tr><td>PKTLEN<td>0x0006</td><td>0x28</td><td>Packet Length</td></tr>
+<tr><td>PKTCTRL0<td>0x0008</td><td>0x05</td><td>Packet Automation Control</td></tr>
+<tr><td>CHANNR<td>0x000A</td><td>0x0A</td><td>Channel number</td></tr>
+<tr><td>FREQ2<td>0x000D</td><td>0x21</td><td>Frequency Control Word, High Byte</td></tr>
+<tr><td>FREQ1<td>0x000E</td><td>0x62</td><td>Frequency Control Word, Middle Byte</td></tr>
+<tr><td>FREQ0<td>0x000F</td><td>0x76</td><td>Frequency Control Word, Low Byte</td></tr>
+<tr><td>MDMCFG4<td>0x0010</td><td>0xCA</td><td>Modem Configuration</td></tr>
+<tr><td>MDMCFG3<td>0x0011</td><td>0x83</td><td>Modem Configuration</td></tr>
+<tr><td>MDMCFG2<td>0x0012</td><td>0x11</td><td>Modem Configuration</td></tr>
+<tr><td>DEVIATN<td>0x0015</td><td>0x35</td><td>Modem Deviation Setting</td></tr>
+<tr><td>MCSM0<td>0x0018</td><td>0x18</td><td>Main Radio Control State Machine Configuration</td></tr>
+<tr><td>RESERVED_0X20<td>0x0020</td><td>0xFB</td><td>Use setting from SmartRF Studio</td></tr>
+<tr><td>FSCAL3<td>0x0023</td><td>0xE9</td><td>Frequency Synthesizer Calibration</td></tr>
+<tr><td>FSCAL2<td>0x0024</td><td>0x2A</td><td>Frequency Synthesizer Calibration</td></tr>
+<tr><td>FSCAL1<td>0x0025</td><td>0x00</td><td>Frequency Synthesizer Calibration</td></tr>
+<tr><td>FSCAL0<td>0x0026</td><td>0x1F</td><td>Frequency Synthesizer Calibration</td></tr>
+<tr><td>TEST2<td>0x002C</td><td>0x81</td><td>Various Test Settings</td></tr>
+<tr><td>TEST1<td>0x002D</td><td>0x35</td><td>Various Test Settings</td></tr>
+<tr><td>TEST0<td>0x002E</td><td>0x09</td><td>Various Test Settings</td></tr>
+</table>
+
+Now, we can note some new observations
+* Carrier frequency is not exactly 868 MHz
+* Modulation type is set to GFSK
+* Channel spacing is not Deviation * 2...
+
+We should update our RfCat-script to reflect these findings. (Note to self: Do this at a later time).
 
 # Ideas for the future
 * Build a hardware receiver using a CC1101
 * Build a software receiver using GNU Radio
-* Connect a logic analyzer on the sender to retrieve the CC115L settings sent from the micro-controller.
 * Connect a programmer to the micro-controller and see if we can dump the flash memory.
 
 
