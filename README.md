@@ -1047,6 +1047,13 @@ We could look up exactly what each configured register value corresponds to in t
 
 ![SmartRF Studio](LogicAnalyzer/400_565_321/09.SmartRF.Studio.png?raw=true "SmartRF Studio")
 
+Now, we can note some new observations
+* Carrier frequency is not exactly 868 MHz (as we saw in the Inspectrum analysis)
+* Modulation type is set to GFSK, not FSK.
+* Channel spacing is not set to Deviation * 2.
+
+SmartRF Studio enables us to export the registers in a pretty HTML-table:
+
 <table border=1 cellpadding=5 cellspacing=0>
 <caption>CC115L registers as sent by the MSP430G2433 MCU</caption>
 <tr><th>Name</th><th>Address</th><th>Value</th>
@@ -1076,10 +1083,7 @@ We could look up exactly what each configured register value corresponds to in t
 <tr><td>TEST0<td>0x002E</td><td>0x09</td><td>Various Test Settings</td></tr>
 </table>
 
-Now, we can note some new observations
-* Carrier frequency is not exactly 868 MHz
-* Modulation type is set to GFSK
-* Channel spacing is not Deviation * 2...
+
 
 We should update our RfCat-script to reflect these findings. (Note to self: Do this at a later time).
 
