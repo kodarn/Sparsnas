@@ -845,7 +845,7 @@ We scroll to the right, to about 18,8 seconds into the recording. There we find 
 
 ![Sending the first packet](LogicAnalyzer/400_565_321/07.DSLogic.First.Packet.png?raw=true "Sending the first packet")
 
-To the far right in the DSView-window the SPI-decoder dumps all the decoded MOSI/MISO values. By clicking 'Export' in the gui we can save the values to `.csv`/`.txt`-files. Now, using what we learned from reading the CC115L-datasheet, we annotate the exported textfile as:
+To the far right in the DSView-window the SPI-decoder dumps all the decoded MOSI/MISO values. By clicking 'Export' in the gui we can save the values to `.csv`/`.txt`-files ([here](LogicAnalyzer/BootAndTwoPacketsWithAll4At25MHz_MOSI.csv) & [here](Docs/LogicAnalyzer/BootAndTwoPacketsWithAll4At25MHz_MISO.csv)). Now, using what we learned from reading the CC115L-datasheet, we annotate the exported textfile as:
 
 ```
 #-----------------------------------------------------------------------------
