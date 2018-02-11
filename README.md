@@ -789,7 +789,7 @@ It might not be the prettiest of soldering, but it works :-)
 
 ## Recording the signals
 
-Logic analyzers are great tools to debug and analyze elektronics. Here we use a a logic analyzer called [DSLogic](http://www.dreamsourcelab.com/dslogic.html). They're available on [EBay](https://www.ebay.com/) or [BangGood](https://www.banggood.com/search/dslogic.html) etc. Connect the coupling wires to the analyzer, and connect the analyzer using a USB cable to your computer. Now, start the [DSView](http://www.dreamsourcelab.com/download.html) software and begin the recording process. Click the record-button in the gui and plug the batteries into the Sparsnäs-sensor. We record about 40 seconds of data, resulting with the following:
+Logic analyzers are great tools to debug and analyze electronics. Here we use a a logic analyzer called [DSLogic](http://www.dreamsourcelab.com/dslogic.html). They're available on [EBay](https://www.ebay.com/) or [BangGood](https://www.banggood.com/search/dslogic.html) etc. Connect the coupling wires to the analyzer, and connect the analyzer using a USB cable to your computer. Now, start the [DSView](http://www.dreamsourcelab.com/download.html) software and begin the recording process. Click the record-button in the gui and plug the batteries into the Sparsnäs-sensor. We record about 40 seconds of data, resulting with the following:
 
 ![Connecting the logic analyzer](LogicAnalyzer/400_565_321/02.Solder2.jpg?raw=true "Connecting the logic analyzer")
 ![Data recording](LogicAnalyzer/400_565_321/03.DSLogic.Overview.of.SPI.signals.png?raw=true "Data recording")
@@ -838,10 +838,10 @@ Equipped with this knowledge, we can understand the SPI-stream.
 The CC115L-transmitter is configured by setting values into specific registers. We zoom in to the *first* SPI-packet burst, which is the setup of the transmitter, and hope to see these registers being set.
 ![Setup of registers in the CC115L](LogicAnalyzer/400_565_321/05.DSLogic.Setup.Transmitter.png?raw=true "Setup of registers in the CC115L")
 
-Zooming in even further we see the beginning of the register setup. `MOSI` is data sent *to* the CC115L-chip, and its counter part `MISO` data sent back to the microcontroller. In the image you can observe bytes going out to the CC115L-chip, `00, 0B` and `01, 2E` in green text. What that means is `Register00 = 0x0B`, `Register01=0x2E`. What these registers and values do is well documented in the [CC115L datasheet](Docs/TexasInstruments.CC115L-RF.Transmitter.On.Sensor.pdf).
+Zooming in even further we see the beginning of the register setup. `MOSI` is data sent *to* the CC115L-chip, and its counter part `MISO` data sent back to the microcontroller. In the image you can observe bytes going out to the CC115L-chip, `00, 0B` and `01, 2E` in green text. What that means is `Register00 = 0x0B`, `Register01=0x2E`. What these registers and values do is well documented in the [CC115L datasheet](Docs/TexasInstruments.CC115L-RF.Transmitter.On.Sensor.pdf) section 5.19.
 
 ![Start of the registers setup in the CC115L](LogicAnalyzer/400_565_321/06.DSLogic.Setup.Transmitter.png?raw=true "Start of the registers setup in the CC115L")
-We scroll to the right, to about 18,8 seconds into the recording. There we find the *first* **data-packet** being sent. Note the sequence `11` `49` `00` `07` `0F` `A2` `76`. This matches what we seen previously in the analyses. If you don't recall them, you may go [up](#finding-the-xor-key-for-any-device) in the text to the XOR-analysis and check out the data sent in the first packet of the `400 565 321` sensor.
+We scroll to the right, to about 18,8 seconds into the recording. There we find the *first* **data-packet** being sent. Note the sequence `11` `49` `00` `07` `0F` `A2` `76`. This matches what we seen previously in the analyses. If you don't recall them, you may go [up](#experiment-1-finding-counters) in the text to the XOR-analysis and check out the data sent in the first packet of the `400 565 321` sensor.
 
 ![Sending the first packet](LogicAnalyzer/400_565_321/07.DSLogic.First.Packet.png?raw=true "Sending the first packet")
 
