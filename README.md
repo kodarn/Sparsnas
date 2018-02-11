@@ -1048,7 +1048,7 @@ We could continue to look up exactly what each configured register value corresp
 ![SmartRF Studio](LogicAnalyzer/400_565_321/09.SmartRF.Studio.png?raw=true "SmartRF Studio")
 
 Now, we can note some new observations
-* **Base Frequency** `867.999939 MHz` is not exactly `868 MHz` (just as we saw in the Inspectrum analysis)
+* **Base Frequency** `867.999939 MHz` is not exactly `868 MHz` (just as we saw in the Inspectrum analysis) but very very close. 
 * **Deviation** of `20.629883 kHz` was quite close to our Inspectrum analysis (`20.0 kHz`)
 * **Data Rate** of `38.3835 kBaud` was quite close to our Inspectrum analysis (`38.391 kBaud`)
 * However, **Modulation Format** is set to `GFSK`, not `FSK`. We should look into how we could have made this distinction earlier.
