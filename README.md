@@ -1043,16 +1043,16 @@ SPI    MOSI  Comment
 ```
 
 ## SmartRF Studio
-We could look up exactly what each configured register value corresponds to in the CC115L datasheet. This will provide us with the best understanding of things. However, Texas Instruments develops a tool called [SmartRF Studio](http://www.ti.com/tool/SMARTRFTM-STUDIO). It is the recommended tool for configuring devices in the Texas CCxxxx-series. We can feed the register settings into this application to observe some of the details quite easliy:
+We could continue to look up exactly what each configured register value corresponds to in the CC115L datasheet. This will provide us with the best understanding of things. However, Texas Instruments develops a tool called [SmartRF Studio](http://www.ti.com/tool/SMARTRFTM-STUDIO). It is the recommended tool for configuring devices in the Texas CCxxxx-series. We can feed the register settings into this application to observe some of the details quite easliy:
 
 ![SmartRF Studio](LogicAnalyzer/400_565_321/09.SmartRF.Studio.png?raw=true "SmartRF Studio")
 
 Now, we can note some new observations
-* The base frequency 867.999939 MHz is not exactly 868 MHz (just as we saw in the Inspectrum analysis)
-* The deviation of 20.629883 kHz was quite close to our Inspectrum analysis (20.0 kHz)
-* The data rate of 38.3835 kBaud was quite close to our Inspectrum analysis (38.391 kBaud)
-* However, modulation type is set to GFSK, not FSK. We should look into how we could have made this distriction earlier.
-* Also, Channel spacing is not set to the theoretical FSK value of Deviation * 2 (40.0 kHz in our Inspectrum analysis), but instead to 199.951172 kHz. We should also look into the theory behind this.
+* Base Frequency 867.999939 MHz is not exactly 868 MHz (just as we saw in the Inspectrum analysis)
+* Deviation of 20.629883 kHz was quite close to our Inspectrum analysis (20.0 kHz)
+* Data Rate of 38.3835 kBaud was quite close to our Inspectrum analysis (38.391 kBaud)
+* However, Modulation Format is set to GFSK, not FSK. We should look into how we could have made this distinction earlier.
+* Also, Channel Spacing is not set to the theoretical Deviation * 2 (40.0 kHz in our Inspectrum analysis) found in FSK-literature, but instead to 199.951172 kHz. We should look into the theory behind this.
 
 SmartRF Studio enables us to export the registers in a pretty HTML-table:
 
