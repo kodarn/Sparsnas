@@ -1084,8 +1084,7 @@ SmartRF Studio enables us to export the registers in a pretty HTML-table:
 </table>
 
 
-
-We should update our RfCat-script to reflect these findings. (Note to self: Do this at a later time).
+We should update our RfCat-script to reflect these findings. (Note to self: Do this at a later time). Also, if time allows it, we should dump the signals on the SPI-bus on at least one more Sparsnäs-device to investigate how radio configurations vary between devices.
 
 # Ideas for the future
 * Build a hardware receiver using a CC1101
