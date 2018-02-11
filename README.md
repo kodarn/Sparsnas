@@ -1048,9 +1048,11 @@ We could look up exactly what each configured register value corresponds to in t
 ![SmartRF Studio](LogicAnalyzer/400_565_321/09.SmartRF.Studio.png?raw=true "SmartRF Studio")
 
 Now, we can note some new observations
-* Carrier frequency is not exactly 868 MHz (as we saw in the Inspectrum analysis)
-* Modulation type is set to GFSK, not FSK.
-* Channel spacing is not set to Deviation * 2.
+* The base frequency 867.999939 MHz is not exactly 868 MHz (just as we saw in the Inspectrum analysis)
+* The deviation of 20.629883 kHz was quite close to our Inspectrum analysis (20.0 kHz)
+* The data rate of 38.3835 kBaud was quite close to our Inspectrum analysis (38.391 kBaud)
+* However, modulation type is set to GFSK, not FSK. We should look into how we could have made this distriction earlier.
+* Also, Channel spacing is not set to the theoretical FSK value of Deviation * 2 (40.0 kHz in our Inspectrum analysis), but instead to 199.951172 kHz. We should also look into the theory behind this.
 
 SmartRF Studio enables us to export the registers in a pretty HTML-table:
 
