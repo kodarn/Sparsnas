@@ -760,7 +760,7 @@ This is what the first captured packets looked like:
                                   \-------------/\--------------/      \-----------/
                                        XOR Key        XOR Key             XOR-Key
 ```
-When comparing the 'Status' and Fixed columns we start realize some things
+When comparing the 'Status' and 'Fixed' columns we start realize some things
   - Applying the the XOR-keys will produce different results
   - If the information is some static sender id this might be correct
   - If the information is some static version info etc this would not be correct
