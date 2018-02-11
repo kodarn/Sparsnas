@@ -1050,7 +1050,7 @@ We could continue to look up exactly what each configured register value corresp
 Now, we can note some new observations
 * **Base Frequency** `867.999939 MHz` is not exactly `868 MHz` (just as we saw in the Inspectrum analysis)
 * **Deviation** of `20.629883 kHz` was quite close to our Inspectrum analysis (`20.0 kHz`)
-* **Data Rate* of `38.3835 kBaud` was quite close to our Inspectrum analysis (`38.391 kBaud`)
+* **Data Rate** of `38.3835 kBaud` was quite close to our Inspectrum analysis (`38.391 kBaud`)
 * However, **Modulation Format** is set to `GFSK`, not `FSK`. We should look into how we could have made this distinction earlier.
 * Also, **Channel Spacing** is not set to the theoretical Deviation * 2 (`40.0 kHz` in our Inspectrum analysis) found in FSK-literature, but instead to `199.951172 kHz`. We should look into the theory behind this.
 
