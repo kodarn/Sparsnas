@@ -1092,7 +1092,7 @@ In order to investigate whether the radio configuration varies between Sparsnäs
 
 ![Comparing SPI bus on two different Sparsnäs-devices](LogicAnalyzer/Compare.png?raw=true "Comparing SPI bus on two different Sparsnäs-devices")
 
-As we can see in the data, the CC115L-registers setup is identical in both cases. Only the packet sending data differs, which is expected since the devices are operating with different XOR-Keys.
+As we can see in the data, the setup of the CC115L-registers are identical in both cases. Only some parts of the packet payload data differs, which is expected since the devices are operating with different XOR-Keys.
 
 
 We should update our RfCat-script to reflect these findings. (Note to self: Do this at a later time). 
