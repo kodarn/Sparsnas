@@ -1088,11 +1088,11 @@ SmartRF Studio enables us to export the registers in a pretty HTML-table:
 <tr><td>TEST0<td>0x002E</td><td>0x09</td><td>Various Test Settings</td></tr>
 </table>
 
-In order to investigate whether the radio configuration varies between Sparsnäs-devices, we repeat the whole process once again, and end up with this data.
+In order to investigate whether the radio configuration varies between Sparsnäs-devices, we repeat the whole process of recording the SPI bus once again, and end up with this data. The previous device is `400 565 321` and the new device is `400 710 424`. SPI entry 0 -> 102 is the initial setup of the radio. SPI entry 103 -> 124 is the burst send of the first packet. SPI entry 125 -> 146 is the burst send of the second packet.
 
 ![Comparing SPI bus on two different Sparsnäs-devices](LogicAnalyzer/Compare.png?raw=true "Comparing SPI bus on two different Sparsnäs-devices")
 
-As we can see in the data, the CC115L-registers setup is identical in both cases. Only the packet sending data differs, which is expected.
+As we can see in the data, the CC115L-registers setup is identical in both cases. Only the packet sending data differs, which is expected since the devices are operating with different XOR-Keys.
 
 
 We should update our RfCat-script to reflect these findings. (Note to self: Do this at a later time). 
