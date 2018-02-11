@@ -760,21 +760,12 @@ This is what the first captured packets looked like:
                                   \-------------/\--------------/      \-----------/
                                        XOR Key        XOR Key             XOR-Key
 ```
-... and this is what it looked like after we applied the XOR-key:
-```
-| S/N          | Len | ID | Cnt | Status | Fixed    | PCnt | AvgTime | PulseCnt | d3 | Crc16 | XOR-Key (applying our algorithm) |
-| -----------: | :-- | :- | :-- | :----- | :------- | :--- | :------ | :------- | :- | :---- | :------------------------------- |
-| 400 565 321  | 11  | 49 | 00  | 400f   | a276170e | cfa2 | 8148    | 47cfa27e | d3 | f80d  | 47 cf a2 7e b7                   |
-| 400 595 807  | 11  | 5f | 00  | 400f   | a29d3918 | d0a2 | 6bd1    | 47d0a294 | 4a | b472  | 47 d0 a2 94 2e                   |
-| 400 628 220  | 11  | fc | 00  | 400f   | a23838bb | d0a2 | ce52    | 47d0a231 | c9 | 40d8  | 47 d0 a2 31 ad                   |
-| 400 629 153  | 11  | a1 | 00  | 400f   | a2df29e6 | d0a2 | 294f    | 47d0a2d6 | d4 | a250  | 47 d0 a2 d6 b0                   |
-| 400 630 087  | 11  | 47 | 00  | 400f   | a2752900 | d0a2 | 834b    | 47d0a27c | d0 | b906  | 47 d0 a2 7c b4                   |
-| 400 631 291  | 11  | fb | 00  | 400f   | a23918bc | d0a2 | cf46    | 47d0a230 | dd | 7dd3  | 47 d0 a2 30 b9                   |
-| 400 673 174  | 11  | 96 | 00  | 400f   | a2c119d1 | d1a2 | 34a3    | 47d1a2cb | 38 | ab5f  | 47 d1 a2 cb 5c                   |
-| 400 710 424  | 11  | 18 | 00  | 400f   | a247395f | d1a2 | b211    | 47d1a24d | 8a | 3049  | 47 d1 a2 4d ee                   |
-                                  \-------------/\--------------/      \-----------/
-                                       XOR Key        XOR Key             XOR-Key
-```
+When comparing the 'Status' and Fixed columns we start realize some things
+  - Applying the the XOR-keys will produce different results
+  - If the information is some static sender id this might be correct
+  - If the information is some static version info etc this would not be correct
+  - The 'Status' column should not have different values in the same state. This tells us that if we're to understand we need to review our assumption of the first XOR Key.
+  - In order to properly investigate this, we should dump the flash memory of the MSP430G2433 microcontroller. More on that later.
 
 # SPI signal analysis
 The MSP430G2433-microcontroller communicates with the CC115L-transmitter using [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus). On boot, the microcontroller will configure the transmitter radio settings by writing a set of registers in the transmitter. If we can read these settings we could verify our Inspectrum analysis above. Infact, we could have benefitted from having this knowledge before we did the Inspectrum analysis.
@@ -1052,7 +1043,7 @@ SPI    MOSI  Comment
 ```
 
 ## SmartRF Studio
-We could look up exactly what each configured register value corresponds to in the CC115L datasheet. This will provide us with the best understanding of things. However, Texas Instruments develops a tool called SmartRF Studio. It is the recommended tool for configuring devices in the Texas CCxxxx-series. We can feed the register settings into this application to observe some of the details quite easliy:
+We could look up exactly what each configured register value corresponds to in the CC115L datasheet. This will provide us with the best understanding of things. However, Texas Instruments develops a tool called [SmartRF Studio](http://www.ti.com/tool/SMARTRFTM-STUDIO). It is the recommended tool for configuring devices in the Texas CCxxxx-series. We can feed the register settings into this application to observe some of the details quite easliy:
 
 ![SmartRF Studio](LogicAnalyzer/400_565_321/09.SmartRF.Studio.png?raw=true "SmartRF Studio")
 
