@@ -34,6 +34,7 @@
     - [Studying the CC115L datasheet](#studying-the-cc115l-datasheet)
     - [Decoding the SPI stream](#decoding-the-spi-stream)
     - [SmartRF Studio](#smartrf-studio)
+- [The receiving display](#the-receiving-display)
 - [Ideas for the future](#ideas-for-the-future)
 
 <!-- /TOC -->
@@ -1096,6 +1097,13 @@ As we can see in the data, the setup of the CC115L-registers are identical in bo
 
 
 We should update our RfCat-script to reflect these findings. (Note to self: Do this at a later time). 
+
+
+# The receiving display
+The receiver consists of a Texas Instruments [CC113L](Docs/TexasInstruments.CC113L-RF.Receiver.On.Display.pdf) receiver, an [NXP LPC1785FBD208](Docs/NXP_LPC1785FBD208-MicroController.On.Display.pdf) microcontroller, a [Flash Memory](Docs/Winbond_25Q32FVS1G_1407-FlashMemory.On.Display.pdf), and a display. The microcontroller uses [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus) to communicate with the CCL113L receiver and the flash memory. Here's an outline of the schematics:
+
+![The receiving display](Docs/HardwareBoard_Receiver_Outline.png?raw=true "The receiving display")
+
 
 # Ideas for the future
 * Build a hardware receiver using a CC1101
