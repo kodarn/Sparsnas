@@ -1108,7 +1108,7 @@ We solder the SPI-connectors onto the board, and hook up the logic analyzer.
 
 ![The receiving display hooked up to the logic analyzer](LogicAnalyzer/400_565_321-Receiver/ProbeHookup.jpg?raw=true "The receiving display hooked up to the logic analyzer")
 
-When diff'ing the result of the sender (CC115L) compared to the receiver (CC113L) we see note the following: 
+When diff'ing the result of the sender (CC115L) compared to the receiver (CC113L) we see the following: 
 
 (Both sender & receiver are of serial number `400 565 321`)
 
