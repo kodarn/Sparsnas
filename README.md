@@ -1121,7 +1121,9 @@ The setups are identical except for the last bytes.
 
 # Build a hardware receiver using a CC1101
 
-[Example 1](https://www.compel.ru/lib/ne/2014/10/4-moe-pervoe-prilozhenie-dlya-besprovodnoy-svyazi-v-diapazone-868-mgts-poshagovaya-instruktsiya-chast-i)
+This section is Work-In-Progress
+
+![Schematics of WeMos D1 mini & CC1101](Hardware.Receiver/WeMos.CC1101.Scheme.png?raw=true "Schematics of WeMos D1 mini & CC1101")
 
 
 # Ideas for the future
