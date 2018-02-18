@@ -35,6 +35,7 @@
     - [Decoding the SPI stream](#decoding-the-spi-stream)
     - [SmartRF Studio](#smartrf-studio)
     - [SPI analysis of the receiving display](#spi-analysis-of-the-receiving-display)
+- [Build a hardware receiver using a CC1101](#build-a-hardware-receiver-using-a-cc1101)
 - [Ideas for the future](#ideas-for-the-future)
 
 <!-- /TOC -->
@@ -76,7 +77,8 @@ hackrf_transfer -r outfile.cs8 -f 868000000 -s 2000000
 osmocom_fft -a airspy -f 868000000 -v
 ```
 
-This text will not go into the details on how to install the software. This text will continue assuming that you managed to record a signal to file on disk using one of the command lines above. Note: different applications stores the signal data in different formats such as `*.cu8`, `*.cs8`, `*.cu16`, `*.cfile`, etc. Common to all these formats is the sample form called ["IQ"](http://whiteboard.ping.se/SDR/IQ).
+This text will not go into the details on how to install the software. This text will continue assuming that you managed to record a signal to file on disk using one of the command lines above. Note: different applications stores the signal data in different formats such as `*.cu8`, `*.cs8`, `*.cu16`, `*.cfile`, etc. Common to all these formats is the sample form called ["IQ"](http://whiteboard.ping.se/SDR/IQ). [Here](https://arachnoid.com/software_defined_radios/) is another IQ resource.
+
 
 If you have never worked with signal analysis before, you can check out Mike Ossmann's introduction tutorials on the Yard Stick One: [Part 1](https://www.youtube.com/watch?v=eVqIe3na_Zk) and [Part 2](https://www.youtube.com/watch?v=vf38-8LbDuw).
 
@@ -863,11 +865,11 @@ SPI    MOSI  Comment
 ===    ====  ==================================================================
   0    30    0x30: SRES (Reset Chip)
   1    00    0x00: IOCFG2 - GDO2 Output Pin Configuration (Table 5-17)
-  2    0B          -> 0x0B
+  2    0B          -> 0x0B (Serial Clock)
   3    01    0x01: IOCFG1 - GDO1 Output Pin Configuration (Table 5-18)
-  4    2E          -> 0x2E
+  4    2E          -> 0x2E (High impedance (3-state))
   5    02    0x02: IOCFG0 - GDO0 Output Pin Configuration (Table 5-19)
-  6    06          -> 0x06
+  6    06          -> 0x06 (Assist interrupt-driven model in MCU by go high when sync word has been sent, and low at the end of the packet)
   7    03    0x03: FIFOTHR - TX FIFO Thresholds (Table 5-20)
   8    47           -> 33 bytes in TX FIFO
   9    04    0x04: SYNC1 - Sync Word, High Byte (Table 5-21)
@@ -921,7 +923,7 @@ SPI    MOSI  Comment
  45    16    0x016: Not used
  46    07 
  47    17    0x17: MCSM1 - Main Radio Control State Machine Configuration (Table 5-36)
- 48    30          -> 0x30
+ 48    30          -> 0x30 (When a packet has been sent, Stay in TX (start sending preamble))
  49    18    0x18: MCSM0 - Main Radio Control State Machine Configuration (Table 5-37)
  50    18          -> 0x18
  51    19    0x19: Not used
@@ -1116,8 +1118,13 @@ When diff'ing the result of the sender (CC115L) compared to the receiver (CC113L
 
 The setups are identical except for the last bytes.
 
+
+# Build a hardware receiver using a CC1101
+
+[Example 1](https://www.compel.ru/lib/ne/2014/10/4-moe-pervoe-prilozhenie-dlya-besprovodnoy-svyazi-v-diapazone-868-mgts-poshagovaya-instruktsiya-chast-i)
+
+
 # Ideas for the future
-* Build a hardware receiver using a CC1101
 * Build a software receiver using GNU Radio
 * Connect a programmer to the micro-controller and see if we can dump the flash memory.
 
