@@ -1124,6 +1124,7 @@ The setups are identical except for the last bytes.
 This section is Work-In-Progress
 
 ![Schematics of WeMos D1 mini & CC1101](Hardware.Receiver/WeMos.CC1101.Scheme.png?raw=true "Schematics of WeMos D1 mini & CC1101")
+![Schematics of WeMos D1 mini & CC1101 using a WeMos Proto board](Hardware.Receiver/WeMos.CC1101.Scheme2.png?raw=true "Schematics of WeMos D1 mini & CC1101 using a WeMos Proto board")
 
 
 # Ideas for the future
