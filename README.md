@@ -36,6 +36,8 @@
     - [SmartRF Studio](#smartrf-studio)
     - [SPI analysis of the receiving display](#spi-analysis-of-the-receiving-display)
 - [Build a hardware receiver using a CC1101](#build-a-hardware-receiver-using-a-cc1101)
+    - [Build list](#build-list)
+    - [Source code](#source-code)
 - [Ideas for the future](#ideas-for-the-future)
 
 <!-- /TOC -->
@@ -1124,7 +1126,21 @@ The setups are identical except for the last bytes.
 This section is Work-In-Progress
 
 ![Schematics of WeMos D1 mini & CC1101](Hardware.Receiver/WeMos.CC1101.Scheme.png?raw=true "Schematics of WeMos D1 mini & CC1101")
+
+## Build list
+* [WeMos D1 Mini](https://www.banggood.com/Wemos-D1-Mini-V2_3_0-WIFI-Internet-Of-Things-Development-Board-Based-ESP8266-ESP-12S-4MB-FLASH-p-1214756.html)
+* [WeMos D1 Mini ProtoBoard Shield](
+https://www.banggood.com/WeMos-ProtoBoard-Shield-For-WeMos-D1-Mini-Double-Sided-Perf-Board-Compatible-p-1160555.html)
+* [WeMos D1 Mini Dual Base](https://www.banggood.com/WeMos-Double-Socket-Dual-Base-Shield-For-WeMos-D1-Mini-NodeMCU-ESP8266-DIY-PCB-D1-Expansion-Board-p-1160486.html)
+
+* [Texas Instruments CC1101 Wireless Module 868 MHz](https://www.ebay.com/sch/i.html?_nkw=CC1101+wireless+module+868)
+
+
+
 ![Schematics of WeMos D1 mini & CC1101 using a WeMos Proto board](Hardware.Receiver/WeMos.CC1101.Scheme2.png?raw=true "Schematics of WeMos D1 mini & CC1101 using a WeMos Proto board")
+
+## Source code
+Insert link here
 
 
 # Ideas for the future
