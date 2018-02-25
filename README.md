@@ -1134,6 +1134,8 @@ https://www.banggood.com/WeMos-ProtoBoard-Shield-For-WeMos-D1-Mini-Double-Sided-
 * [WeMos D1 Mini Dual Base](https://www.banggood.com/WeMos-Double-Socket-Dual-Base-Shield-For-WeMos-D1-Mini-NodeMCU-ESP8266-DIY-PCB-D1-Expansion-Board-p-1160486.html)
 
 * [Texas Instruments CC1101 Wireless Module 868 MHz](https://www.ebay.com/sch/i.html?_nkw=CC1101+wireless+module+868)
+    * [Reference Documentation](Docs/TexasInstruments.CC1101-Tranceiver.pdf)
+
 
 
 ![Schematics of WeMos D1 mini & CC1101 using a WeMos Proto board](Hardware.Receiver/WeMos.CC1101.Scheme2.png?raw=true "Schematics of WeMos D1 mini & CC1101 using a WeMos Proto board")
