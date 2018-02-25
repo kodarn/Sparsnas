@@ -1129,10 +1129,9 @@ This section is Work-In-Progress
 
 ## Build list
 * [WeMos D1 Mini](https://www.banggood.com/Wemos-D1-Mini-V2_3_0-WIFI-Internet-Of-Things-Development-Board-Based-ESP8266-ESP-12S-4MB-FLASH-p-1214756.html)
+* [WeMos D1 Mini Dual Base](https://www.banggood.com/WeMos-Double-Socket-Dual-Base-Shield-For-WeMos-D1-Mini-NodeMCU-ESP8266-DIY-PCB-D1-Expansion-Board-p-1160486.html)
 * [WeMos D1 Mini ProtoBoard Shield](
 https://www.banggood.com/WeMos-ProtoBoard-Shield-For-WeMos-D1-Mini-Double-Sided-Perf-Board-Compatible-p-1160555.html)
-* [WeMos D1 Mini Dual Base](https://www.banggood.com/WeMos-Double-Socket-Dual-Base-Shield-For-WeMos-D1-Mini-NodeMCU-ESP8266-DIY-PCB-D1-Expansion-Board-p-1160486.html)
-
 * [Texas Instruments CC1101 Wireless Module 868 MHz](https://www.ebay.com/sch/i.html?_nkw=CC1101+wireless+module+868)
     * [Reference Documentation](Docs/TexasInstruments.CC1101-Tranceiver.pdf)
 
