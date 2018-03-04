@@ -49,11 +49,13 @@ Ikea Sparsnäs is an energy monitor which aim is to monitor electricity usage. I
 ![Introduction to IKEA Sparsnas](Docs/Sparsnas.intro.png?raw=true "Introduction to IKEA Sparsnas")
 ![Introduction to IKEA Sparsnas - RF](Docs/Sparsnas.intro2.png?raw=true "Introduction to IKEA Sparsnas- RF")
 
-It uses a Texas Instruments CC115L transmitter, and the display-enabled receiver uses a Texas Instruments CC113L.
+It uses a Texas Instruments CC115L transmitter, and the display-enabled receiver uses a Texas Instruments CC113L. 
 
  * [Texas Instruments CC115L](Docs/TexasInstruments.CC115L-RF.Transmitter.On.Sensor.pdf) - Transmitter datasheet
  * [Texas Instruments CC113L](Docs/TexasInstruments.CC113L-RF.Receiver.On.Display.pdf) - Receiver datasheet
  
+(The CC-series is originally a ChipCon product, and came into the TI-line back in 2006 when Texas Instruments aquired ChipCon)
+
 ## The sending sensor
 The sensor consists of a led impulse sensor connected to a Texas Instruments [MSP430G2433](Docs/TexasInstruments.MSP430G2433-MicroController.On.Sensor.pdf) micro-controller (packaged as a 20-TSSOP), where the sensor data is processed. Every 15'th second, the micro-controller sends the collected sensor data via [SPI](https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus) to the CL115 RF-transmitter, which broadcasts the data wireless to the receiving display.
 ![The sending sensor](Docs/HardwareBoard_Sender.png?raw=true "The sending sensor")
@@ -1133,7 +1135,8 @@ This section is Work-In-Progress
 * [WeMos D1 Mini ProtoBoard Shield](
 https://www.banggood.com/WeMos-ProtoBoard-Shield-For-WeMos-D1-Mini-Double-Sided-Perf-Board-Compatible-p-1160555.html)
 * [Texas Instruments CC1101 Wireless Module 868 MHz](https://www.ebay.com/sch/i.html?_nkw=CC1101+wireless+module+868)
-    * [Reference Documentation](Docs/TexasInstruments.CC1101-Tranceiver.pdf)
+    * [CC1101 Reference Documentation](Docs/TexasInstruments.CC1101-Tranceiver.pdf)
+    * [CC1101 Design Notes 503](Docs/TexasInstruments.CC1101-DesignNotes503.pdf)
 
 
 
