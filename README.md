@@ -1151,7 +1151,7 @@ Insert link here
 # Debugging interfaces of the receiving display
 If you look careful to the right of the processor you see a row of testpin holes. By using our multimeter in beep-mode we can follow the wires to the processor and lookup the pin-descriptions in the [documentation](Docs/NXP_LPC1785FBD208-MicroController.On.Display.pdf). This is the result:
 ![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_Outline2.png?raw=true "Debug interfaces on the receiving display")
-
+Just below the row of the testpin holes you will find set of PullUp/PullDown resistors used to configure the pins to their default values.
 
 # Ideas for the future
 * Build a software receiver using GNU Radio
