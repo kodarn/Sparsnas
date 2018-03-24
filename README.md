@@ -38,6 +38,7 @@
 - [Build a hardware receiver using a CC1101](#build-a-hardware-receiver-using-a-cc1101)
     - [Build list](#build-list)
     - [Source code](#source-code)
+- [Debugging interfaces of the receiving display](#debugging-interfaces-of-the-receiving-display)
 - [Ideas for the future](#ideas-for-the-future)
 
 <!-- /TOC -->
@@ -860,14 +861,14 @@ To the far right in the DSView-window the SPI-decoder dumps all the decoded MOSI
 ```
 #-----------------------------------------------------------------------------
 # Setup registers
-#
-# Timeline position = 5,3 sec
-#
+# Timeline position in DSView: 5,3 sec
+# SPI command values and meaning is located in Texas Instruments Design Notes document "DN503"
+# or the ordinary Datasheet.
 #-----------------------------------------------------------------------------
 
 SPI    MOSI  Comment
 ===    ====  ==================================================================
-  0    30    0x30: SRES (Reset Chip)
+  0    30    0x30: SRES (Reset Chip) [0x30 -> 0011 0000 (WriteBit, StrobeBit, 0x30=SRES)]
   1    00    0x00: IOCFG2 - GDO2 Output Pin Configuration (Table 5-17)
   2    0B          -> 0x0B (Serial Clock)
   3    01    0x01: IOCFG1 - GDO1 Output Pin Configuration (Table 5-18)
@@ -976,12 +977,13 @@ SPI    MOSI  Comment
  94    09          -> 0x09
  95    09    0x09: Not used
  96    00 
- 97    7E    0x3E: (Burst bit set, write at PATABLE Access)
- 98    C0          -> logic 0 power level 
- 99    36          -> logic 1 power level
-100    F1  0x31: (Burst bit set, READ bit set, i.e. Read chip version number)
+ 97    7E    0x7E -> 0111 1110 ==> (WriteBit, StatusBit, 0x3E=PATABLE)
+ 98    C0    0xC0 = PA_LongDistance
+ 99    36    0x36 -> 0011 0110 ==> (WriteBit, StrobeBit, 0x36=SIDLE)
+100    F1    0xF1 -> 1111 0001 ==> (ReadBit,  StatusBit, 0x31=ChipVersion)
 101    00         
-102    39  0x39: SPWD ==> Enter power down mode when CSn goes high.
+102    39    0x39 -> 0011 1001 ==> (WriteBit, StrobeBit, 0x39=SPWD)
+                                   Enter power down mode when CSn goes high.
 ```
 
 ```
@@ -1145,6 +1147,10 @@ https://www.banggood.com/WeMos-ProtoBoard-Shield-For-WeMos-D1-Mini-Double-Sided-
 
 ## Source code
 Insert link here
+
+# Debugging interfaces of the receiving display
+If you look careful to the right of the processor you see a row of testpin holes. By using our multimeter in beep-mode we can follow the wires to the processor and lookup the pin-descriptions in the [documentation](Docs/NXP_LPC1785FBD208-MicroController.On.Display.pdf). This is the result:
+![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_Outline2.png?raw=true "Debug interfaces on the receiving display")
 
 
 # Ideas for the future
