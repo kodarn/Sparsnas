@@ -1125,11 +1125,14 @@ When diff'ing the result of the sender (CC115L) compared to the receiver (CC113L
 The setups are identical except for the last bytes.
 
 ## Debug interfaces of the receiving display
-If you look careful to the right of the processor you see a row of testpin holes. By using our multimeter in beep-mode we can follow the wires to the processor and lookup the pin-descriptions in the [documentation](Docs/NXP_LPC1785FBD208-MicroController.On.Display.pdf). This is the result:
+If you look careful to the right of the processor you see a row of holes which might be used for something if we could solder on a few headers there. By using our multimeter in beep-mode we can follow the wires to the processor and lookup the pin-descriptions in the [documentation](Docs/NXP_LPC1785FBD208-MicroController.On.Display.pdf). Can you see the set of resistors just below the row of holes? These are PullUp/PullDown resistors used to configure the pins to their default values.
+
 ![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_JTAG.jpg?raw=true "Debug interfaces on the receiving display")
 
+This is the result:
+
 ![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_Outline2.png?raw=true "Debug interfaces on the receiving display")
-Just below the row of the testpin holes you will find set of PullUp/PullDown resistors used to configure the pins to their default values.
+
 
 To be continued...
 
