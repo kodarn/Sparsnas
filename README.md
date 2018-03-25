@@ -35,10 +35,10 @@
     - [Decoding the SPI stream](#decoding-the-spi-stream)
     - [SmartRF Studio](#smartrf-studio)
     - [SPI analysis of the receiving display](#spi-analysis-of-the-receiving-display)
+    - [Debug interfaces of the receiving display](#debug-interfaces-of-the-receiving-display)
 - [Build a hardware receiver using a CC1101](#build-a-hardware-receiver-using-a-cc1101)
     - [Build list](#build-list)
     - [Source code](#source-code)
-- [Debugging interfaces of the receiving display](#debugging-interfaces-of-the-receiving-display)
 - [Ideas for the future](#ideas-for-the-future)
 
 <!-- /TOC -->
@@ -1124,6 +1124,15 @@ When diff'ing the result of the sender (CC115L) compared to the receiver (CC113L
 
 The setups are identical except for the last bytes.
 
+## Debug interfaces of the receiving display
+If you look careful to the right of the processor you see a row of testpin holes. By using our multimeter in beep-mode we can follow the wires to the processor and lookup the pin-descriptions in the [documentation](Docs/NXP_LPC1785FBD208-MicroController.On.Display.pdf). This is the result:
+![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_JTAG.jpg?raw=true "Debug interfaces on the receiving display")
+
+![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_Outline2.png?raw=true "Debug interfaces on the receiving display")
+Just below the row of the testpin holes you will find set of PullUp/PullDown resistors used to configure the pins to their default values.
+
+To be continued...
+
 
 # Build a hardware receiver using a CC1101
 
@@ -1147,11 +1156,6 @@ https://www.banggood.com/WeMos-ProtoBoard-Shield-For-WeMos-D1-Mini-Double-Sided-
 
 ## Source code
 Insert link here
-
-# Debugging interfaces of the receiving display
-If you look careful to the right of the processor you see a row of testpin holes. By using our multimeter in beep-mode we can follow the wires to the processor and lookup the pin-descriptions in the [documentation](Docs/NXP_LPC1785FBD208-MicroController.On.Display.pdf). This is the result:
-![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_Outline2.png?raw=true "Debug interfaces on the receiving display")
-Just below the row of the testpin holes you will find set of PullUp/PullDown resistors used to configure the pins to their default values.
 
 # Ideas for the future
 * Build a software receiver using GNU Radio
