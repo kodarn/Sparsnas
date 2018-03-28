@@ -1133,20 +1133,24 @@ This is the result:
 
 ![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_Outline2.png?raw=true "Debug interfaces on the receiving display")
 
-Now, we also notice the five solder-pads just above the processor. 
+Now, we also notice the five solder-pads just above the processor:
 
 ![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_SERIAL.jpg?raw=true "Debug interfaces on the receiving display")
 
-Using the multimeter in beep-mode, we come up with the following result:
+Using the multimeter in beep-mode, we come up with the following scheme:
 
 ![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_Outline3.png?raw=true "Debug interfaces on the receiving display")
 
-When hooking up the logic analyser to TX on UART0, we see the following bits. 
+Lets hook up the logic analyser to TX on UART0:
 ![Serial Port Hook Up](LogicAnalyzer/ReceivingDisplay-SERIALPORT/HookUp.png?raw=true "Serial Port Hook Up")
-![Serial Port](LogicAnalyzer/ReceivingDisplay-SERIALPORT/StartupMessage1.png?raw=true "Serial Port")
-We measure the bit width, and calculate the baudrate based upon that. BaudRate = 1 / PulseWidth =  1 / 0.00002608 = 38343.56, which rounded off to nearest commonly known baudrate is 38400 bps.
 
-Then we can configure the UART-decoder in the logic analyser, which decodes the bits into the text string "Starting up ELIS".
+After an initial test capture, we see the following bits:
+
+![Serial Port](LogicAnalyzer/ReceivingDisplay-SERIALPORT/StartupMessage1.png?raw=true "Serial Port")
+
+We measure the bit width, and calculate the baudrate based upon that data: BaudRate = 1 / PulseWidth =  1 / 0.00002608 = 38343.56, which rounded off to nearest commonly known baudrate is 38400 bps.
+
+Then we can configure the UART-decoder in the logic analyser, which decodes the bits into the text string `"Starting up ELIS"`:
 ![Serial Port](LogicAnalyzer/ReceivingDisplay-SERIALPORT/StartupMessage2.png?raw=true "Serial Port")
 
 
