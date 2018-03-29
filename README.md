@@ -35,9 +35,9 @@
     - [Decoding the SPI stream](#decoding-the-spi-stream)
     - [SmartRF Studio](#smartrf-studio)
     - [SPI analysis of the receiving display](#spi-analysis-of-the-receiving-display)
-    - [Debug interfaces of the receiving display](#debug-interfaces-of-the-receiving-display)
-        - [Analysing the Serial Port](#analysing-the-serial-port)
-        - [Analysing the JTAG Port](#analysing-the-jtag-port)
+- [Debug interfaces of the receiving display](#debug-interfaces-of-the-receiving-display)
+    - [Analysing the Serial Port](#analysing-the-serial-port)
+    - [Analysing the JTAG Port](#analysing-the-jtag-port)
 - [Build a hardware receiver using a CC1101](#build-a-hardware-receiver-using-a-cc1101)
     - [Build list](#build-list)
     - [Source code](#source-code)
@@ -1126,7 +1126,7 @@ When diff'ing the result of the sender (CC115L) compared to the receiver (CC113L
 
 The setups are identical except for the last bytes.
 
-## Debug interfaces of the receiving display
+# Debug interfaces of the receiving display
 If you look careful to the right of the processor, you see a row of holes which might be used for something. What if we could solder on a few headers there... By using our multimeter in beep-mode we can follow the wires to the processor and lookup the pin-descriptions in the [documentation](Docs/NXP_LPC1785FBD208-MicroController.On.Display.pdf). Can you see the set of resistors just below the row of holes? These are PullUp/PullDown resistors used to configure the pins to their default values.
 
 ![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_JTAG.jpg?raw=true "Debug interfaces on the receiving display")
@@ -1143,7 +1143,7 @@ Using the multimeter in beep-mode, we come up with the following scheme:
 
 ![Debug interfaces on the receiving display](Docs/HardwareBoard_Receiver_Outline3.png?raw=true "Debug interfaces on the receiving display")
 
-### Analysing the Serial Port
+## Analysing the Serial Port
 
 Lets hook up the logic analyser to TX on UART0:
 ![Serial Port Hook Up](LogicAnalyzer/ReceivingDisplay-SERIALPORT/HookUp.png?raw=true "Serial Port Hook Up")
@@ -1156,7 +1156,7 @@ We measure the bit width, and calculate the baudrate based upon that data: BaudR
 Now we can configure the UART-decoder in the logic analyser, which decodes the bits into the text string `"Starting up ELIS"`:
 ![Serial Port](LogicAnalyzer/ReceivingDisplay-SERIALPORT/StartupMessage2.png?raw=true "Serial Port")
 
-### Analysing the JTAG Port
+## Analysing the JTAG Port
 
 In order to communicate with the JTAG port, we need some sort of device which is able to talk JTAG. There are the vendor specific devices, but where we will use a generic tool called [AdaFruit FS232H](https://www.adafruit.com/product/2264) which costs about $15. This device can inteface many different technologies and can be seen as a little swiss army knife for serial protocols. By looking into the [datasheet](Docs/FT232H_DataSheet.pdf) of the FS232H, we can figure out how to connect the FT232 to our Ikea Sparsnäs:
 
@@ -1169,7 +1169,7 @@ We connect the FT232H to our computer using a USB-cable, and install [OpenOCD](h
 
 ```
   1. Install OpenOCD
-     sudo apt-get install openocd
+     sudo apt-get install openocd gdb-multiarch
 
   2. Make sure the AdaFruit FT232H is connected
      dmesg
