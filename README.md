@@ -1158,12 +1158,12 @@ Now we can configure the UART-decoder in the logic analyser, which decodes the b
 
 ## Analysing the JTAG Port
 
-In order to communicate with the JTAG port, we need some sort of device which is able to talk JTAG. There are the vendor specific devices, but where we will use a generic tool called [AdaFruit FS232H](https://www.adafruit.com/product/2264) which costs about $15. This device can inteface many different technologies and can be seen as a little swiss army knife for serial protocols. By looking into the [datasheet](Docs/FT232H_DataSheet.pdf) of the FS232H, we can figure out how to connect the FT232 to our Ikea Sparsnäs:
+In order to communicate with the JTAG port, we need some sort of device which is able to talk JTAG. There are the vendor specific devices, but here we will use a generic tool called [AdaFruit FS232H](https://www.adafruit.com/product/2264) which costs about $15. This device is able to inteface with many different technologies and can be seen as a little swiss army knife for serial protocols. By looking into the [datasheet](Docs/FT232H_DataSheet.pdf) of the FS232H, we can figure out how to connect the FT232H to our Ikea Sparsnäs:
 
 ![JTAG Setup](JTAG/HardwareBoard_Receiver_Outline_FT232H.png?raw=true "JTAG Setup")
 ![JTAG Setup](JTAG/FT232H_Setup.jpg?raw=true "JTAG Setup")
 
-We connect the FT232H to our computer using a USB-cable, and install [OpenOCD](http://openocd.net) which is an open source On-Chip debugger toolbox. Using OpenOCD, we can do disassembly, read/write memory etc.
+We connect the AdaFruit FT232H to our computer using a USB-cable, and install [OpenOCD](http://openocd.net) which is an open source On-Chip debugger toolbox. Using OpenOCD, we can do disassembly, read/write memory etc.
 
 ![Connecting using OpenOCD](JTAG/OpenOCD.png?raw=true "Connecting using OpenOCD")
 
