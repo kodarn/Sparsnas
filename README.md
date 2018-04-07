@@ -38,6 +38,7 @@
 - [Debug interfaces of the receiving display](#debug-interfaces-of-the-receiving-display)
     - [Analysing the Serial Port](#analysing-the-serial-port)
     - [Analysing the JTAG Port](#analysing-the-jtag-port)
+    - [Looking into the memory map of the LPC 1785](#looking-into-the-memory-map-of-the-lpc-1785)
 - [Build a hardware receiver using a CC1101](#build-a-hardware-receiver-using-a-cc1101)
     - [Build list](#build-list)
     - [Source code](#source-code)
@@ -1195,8 +1196,43 @@ We now have JTAG-access to the board. Lets attach a more capable debugger:
        x/10i $pc
 ```
 
+## Looking into the memory map of the LPC 1785
+According to the data sheet, the LPC 1785 have the following specifications:
+```
+ * CPU:                         ARM Cortex-M3 120 MHz
+ * On-Chip Flash:               256 kB
+ * Main SRAM Data memory:        64 kB
+ * Peripheral SRAM Data memory:  16 kB
+ * Total SRAM:                   80 kB
+ * On-Chip EEPROM:             4032 Bytes
+```
+
+Lets investigate the memory map of the LPC 1785 microcontroller. Section 2.1 in the [LPC 1785 User Manual](Docs/NXP_LPC1785FBD208-MicroController.On.Display-UserManual.pdf) outlines the address space:
+
+![LPC 1785 Memory Map](Docs/NXP_LPC1785FBD208-MemoryMap.png?raw=true "LPC 1785 Memory Map")
+
+We can use the `dump_image`-command in OpenOCD to save memory to a file:
+
+```
+Command    Filename       StartAddr  NumberOfBytesToSave
+---------- -------------- ---------- -------------------
+dump_image 0x10000000.bin 0x10000000 0x0FFFFFFF
+```
+
+Now, lets see if we can find the XOR-key in our saved data. We're working with the device having the serial number `400 565 321`. As you might recall, we have figured out the XOR-key of this device in our analysis above. Reviewing that [text](#applying-the-xor-keys-to-all-our-sensors) we see the key being `47 cf a2 7e b7`. Searching for a few bytes of the XOR-key results in one hit (in endian-permutated form):
+```
+user@user-virtual-machine:~/OpenOCD$ bgrep2 -C 1 -x cfa2 0x10000000.bin 
+==== 0x00003652 (0x00003640-0x00003670) ====
+0x00003640: e0b20200 eeeeee00 8c360010 e8de2d00    .... .... .6.. ..-.
+0x00003650: 7eb7cfa2 a27eb747 cf800920 11430307    ~... .~.G .... .C..
+                ^-                           
+0x00003660: 0e000e5e 43510307 db002dde e8570300    ...^ CQ.. ..-. .W..
+====
+user@user-virtual-machine:~/OpenOCD$ 
+```
 
 To be continued...
+
 
 
 # Build a hardware receiver using a CC1101
