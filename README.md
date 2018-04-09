@@ -1214,6 +1214,12 @@ Lets investigate the memory map of the LPC 1785 microcontroller. Section 2.1 in 
 
 ![LPC 1785 Memory Map](Docs/NXP_LPC1785FBD208-MemoryMap.png?raw=true "LPC 1785 Memory Map")
 
+<img src="Docs/ARM.Cortex.M-MemoryMap1.png?raw=true" width="20%">
+<img src="Docs/ARM.Cortex.M-MemoryMap2.png?raw=true" width="20%">
+<img src="Docs/ARM.Cortex.M-MemoryMap3.png?raw=true" width="20%">
+<img src="Docs/ARM.Cortex.M-MemoryMap4.png?raw=true" width="22%">
+
+
 We can use the `dump_image`-command in OpenOCD to save memory to a file:
 
 ```
@@ -1319,7 +1325,7 @@ ROM:000383BA
 ROM:000383BA          #
 ROM:000383BA          # Derive XOR-key (which is 5 bytes) from XorSeed (which is 4 bytes)
 ROM:000383BA          #
-ROM:000383BA          LDRB.W          R1, [SP,#0x30+XorSeed+3]           <--- PC_here_when_break_on_first_WP
+ROM:000383BA          LDRB.W          R1, [SP,#0x30+XorSeed+3]        <--- PC_here_when_break_on_first_WP
 ROM:000383BE          LDRB.W          R2, [SP,#0x30+XorSeed]
 ROM:000383C2          STRB.W          R1, [SP,#0x30+XorKey]
 ROM:000383C6          ADD             R1, SP, #0x30+XorKey
@@ -1332,7 +1338,7 @@ ROM:000383D4          LDRB.W          R2, [SP,#0x30+XorSeed+2]
 ROM:000383D8          STRB            R2, [R1,#4]
 ROM:000383DA          
 ROM:000383DA          #
-ROM:000383DA          # Do the XOR_LOOP on buffer R0 = pXorData with the 5-bytes rolling XOR-key R1 = pXorKey
+ROM:000383DA          # Do the XOR_LOOP on buffer R0=pXorData with the 5-bytes rolling XOR-key R1=pXorKey
 ROM:000383DA          #
 ROM:000383DA          MOVS            R2, #0              ; R2 = LoopCnt
 ROM:000383DA                                                R1 = pXorKey
