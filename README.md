@@ -41,6 +41,7 @@
     - [Looking into the memory map of the LPC 1785](#looking-into-the-memory-map-of-the-lpc-1785)
     - [Analysing the memory](#analysing-the-memory)
     - [ReWrite the XOR-decoder in C](#rewrite-the-xor-decoder-in-c)
+- [Final analysis comments](#final-analysis-comments)
 - [Build a hardware receiver using a CC1101](#build-a-hardware-receiver-using-a-cc1101)
     - [Build list](#build-list)
     - [Source code](#source-code)
@@ -1600,10 +1601,12 @@ int main(void)
 }
 ```
 
+# Final analysis comments
+In this article we have analysed the reception of signals sent by the IKEA Sparsnäs radio transmitter. We have covered two approaches:
+  * Radio analysis using SDR and numeric processing.
+  * Reading the receiver device flash memory using JTAG, and analysing the assembler code in order to create a C-implementation.
 
-To be continued...
-
-
+The two approaches have both pros and cons. TODO: Write something insightful here...
 
 # Build a hardware receiver using a CC1101
 
@@ -1630,6 +1633,5 @@ Insert link here
 
 # Ideas for the future
 * Build a software receiver using GNU Radio
-* Connect a programmer to the micro-controller and see if we can dump the flash memory.
 
 
