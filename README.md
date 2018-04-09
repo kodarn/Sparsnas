@@ -1430,7 +1430,7 @@ r1 (/32): 0x10003654
 target halted due to breakpoint, current mode: Thread            <--- Second BreakPoint Hit
 xPSR: 0x61000000 pc: 0x000383f8 msp: 0x10003650
 > mdb 0x10003661 20
-0x10003661: XXXXXX               <--- pXorData after XOR-loop
+0x10003661: 00 08 a0 49 00 00 ff ff 00 00 00 00 64               <--- pXorData after XOR-loop
 > mdb 0x10003654 5
 0x10003654: a2 7e b7 47 cf                                       <--- pXorKey after XOR-loop
 ```
