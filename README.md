@@ -1230,7 +1230,7 @@ user@user-virtual-machine:~/OpenOCD$ bgrep2 -C 1 -x cfa2 0x10000000.bin
 ====
 user@user-virtual-machine:~/OpenOCD$ 
 ```
-This address, 0x10003650, is located on the stack. Lets set a WatchPoint (i.e. a BreakPoint on data access) in OpenOCD on that address:
+This address, `0x10003650`, is located on the stack. Lets set a WatchPoint (i.e. a BreakPoint on data access) in OpenOCD on that address:
 ```
 > wp 0x10003650 4 r
 > resume
@@ -1276,113 +1276,113 @@ I will spare you the diging details and just show you the anotaded result:
 // Prototype: int __fastcall XOR_function(unsigned __int8 *r0_pktBuf, int *r1_pSerialNumber)
 //
 ROM:0003839E
-ROM:0003839E XorSeed                         = -0x30
-ROM:0003839E XorKey                          = -0x2C
-ROM:0003839E localDataBuffer                 = -0x24
+ROM:0003839E XorSeed         = -0x30
+ROM:0003839E XorKey          = -0x2C
+ROM:0003839E localDataBuffer = -0x24
 ROM:0003839E
 ROM:0003839E
-ROM:0003839E                                 #
-ROM:0003839E                                 # Copy SPI pktdata to a local stack buffer
-ROM:0003839E                                 #
-ROM:0003839E                                 PUSH            {R4-R6,LR}
-ROM:000383A0                                 MOV             R4, R1                            ; R4 = pSerialNumber
-ROM:000383A2                                 SUB             SP, SP, #0x20
-ROM:000383A4                                 MOV             R1, R0                            ; R1 = src SPI pktdata
-ROM:000383A6                                 MOVS            R2, #0x12                         ; R2 = src SPI pktdata bufLen
-ROM:000383A8                                 ADD             R0, SP, #0x30+localDataBuffer     ; R0 = dstBuf
-ROM:000383AA                                 BL              Copy_SPI_pktdata
+ROM:0003839E                 #
+ROM:0003839E                 # Copy SPI pktdata to a local stack buffer
+ROM:0003839E                 #
+ROM:0003839E                 PUSH            {R4-R6,LR}
+ROM:000383A0                 MOV             R4, R1                            ; R4 = pSerialNumber
+ROM:000383A2                 SUB             SP, SP, #0x20
+ROM:000383A4                 MOV             R1, R0                            ; R1 = src SPI pktdata
+ROM:000383A6                 MOVS            R2, #0x12                         ; R2 = src SPI pktdata bufLen
+ROM:000383A8                 ADD             R0, SP, #0x30+localDataBuffer     ; R0 = dstBuf
+ROM:000383AA                 BL              Copy_SPI_pktdata
 ROM:000383AA
-ROM:000383AA                                 #
-ROM:000383AA                                 # Derive XorSeed from serial number
-ROM:000383AA                                 #
-ROM:000383AE                                 LDR             R5, [R4,#ResultCtx]
-ROM:000383B0                                 LDR             R1, =0xA2C71735                    <--- Hardcoded XOR-seed constant
-ROM:000383B2                                 ADDS            R1, R1, R5
-ROM:000383B4                                 STR             R1, [SP,#0x30+XorSeed]
-ROM:000383B6                                 
-ROM:000383B6                                 #
-ROM:000383B6                                 # Get ptr to where XOR-data is located in the SPI pktdata
-ROM:000383B6                                 #
-ROM:000383B6                                 ADD.W           R0, SP, #0x30+localDataBuffer+5
-ROM:000383BA                                 
-ROM:000383BA                                 #
-ROM:000383BA                                 # Derive XOR-key (which is 5 bytes) from XorSeed (which is 4 bytes)
-ROM:000383BA                                 #
-ROM:000383BA                                 LDRB.W          R1, [SP,#0x30+XorSeed+3]           <--- PC_here_when_break_on_first_WP
-ROM:000383BE                                 LDRB.W          R2, [SP,#0x30+XorSeed]
-ROM:000383C2                                 STRB.W          R1, [SP,#0x30+XorKey]
-ROM:000383C6                                 ADD             R1, SP, #0x30+XorKey
-ROM:000383C8                                 STRB            R2, [R1,#1]
-ROM:000383CA                                 LDRB.W          R2, [SP,#0x30+XorSeed+1]
-ROM:000383CE                                 STRB            R2, [R1,#2]
-ROM:000383D0                                 MOVS            R2, #0x47 ; 'G'
-ROM:000383D2                                 STRB            R2, [R1,#3]
-ROM:000383D4                                 LDRB.W          R2, [SP,#0x30+XorSeed+2]
-ROM:000383D8                                 STRB            R2, [R1,#4]
-ROM:000383DA                                 
-ROM:000383DA                                 #
-ROM:000383DA                                 # Do the XOR_LOOP on buffer R0 = pXorData with the 5-bytes rolling XOR-key R1 = pXorKey
-ROM:000383DA                                 #
-ROM:000383DA                                 MOVS            R2, #0              ; R2 = LoopCnt
-ROM:000383DA                                                                       R1 = pXorKey
-ROM:000383DA                                                                       R0 = pXorData
+ROM:000383AA                 #
+ROM:000383AA                 # Derive XorSeed from serial number
+ROM:000383AA                 #
+ROM:000383AE                 LDR             R5, [R4,#ResultCtx]
+ROM:000383B0                 LDR             R1, =0xA2C71735                    <--- Hardcoded XOR-seed constant
+ROM:000383B2                 ADDS            R1, R1, R5
+ROM:000383B4                 STR             R1, [SP,#0x30+XorSeed]
+ROM:000383B6                 
+ROM:000383B6                 #
+ROM:000383B6                 # Get ptr to where XOR-data is located in the SPI pktdata
+ROM:000383B6                 #
+ROM:000383B6                 ADD.W           R0, SP, #0x30+localDataBuffer+5
+ROM:000383BA                 
+ROM:000383BA                 #
+ROM:000383BA                 # Derive XOR-key (which is 5 bytes) from XorSeed (which is 4 bytes)
+ROM:000383BA                 #
+ROM:000383BA                 LDRB.W          R1, [SP,#0x30+XorSeed+3]           <--- PC_here_when_break_on_first_WP
+ROM:000383BE                 LDRB.W          R2, [SP,#0x30+XorSeed]
+ROM:000383C2                 STRB.W          R1, [SP,#0x30+XorKey]
+ROM:000383C6                 ADD             R1, SP, #0x30+XorKey
+ROM:000383C8                 STRB            R2, [R1,#1]
+ROM:000383CA                 LDRB.W          R2, [SP,#0x30+XorSeed+1]
+ROM:000383CE                 STRB            R2, [R1,#2]
+ROM:000383D0                 MOVS            R2, #0x47 ; 'G'
+ROM:000383D2                 STRB            R2, [R1,#3]
+ROM:000383D4                 LDRB.W          R2, [SP,#0x30+XorSeed+2]
+ROM:000383D8                 STRB            R2, [R1,#4]
+ROM:000383DA                 
+ROM:000383DA                 #
+ROM:000383DA                 # Do the XOR_LOOP on buffer R0 = pXorData with the 5-bytes rolling XOR-key R1 = pXorKey
+ROM:000383DA                 #
+ROM:000383DA                 MOVS            R2, #0              ; R2 = LoopCnt
+ROM:000383DA                                                       R1 = pXorKey
+ROM:000383DA                                                       R0 = pXorData
 ROM:000383DA
-ROM:000383DC XOR_Loop                                          
-ROM:000383DC                                 MOVS            R6, #5
-ROM:000383DE                                 SDIV.W          R6, R2, R6          ; Calc modulus 5 for XOR-key index 'R2'
-ROM:000383E2                                 ADD.W           R6, R6, R6,LSL#2
-ROM:000383E6                                 SUBS            R6, R2, R6          ; R6 = R2++ % 5
-ROM:000383E8                                 LDRB            R3, [R0]            ; R3 = *pXorData
-ROM:000383EA                                 LDRB            R6, [R6,R1]         ; R6 = XorKey[R2++ % 5]
-ROM:000383EC                                 EORS            R3, R6              ; v = *pXorData ^ XorKey[R2++ % 5];
-ROM:000383EE                                 ADDS            R2, R2, #1
-ROM:000383F0                                 STRB.W          R3, [R0],#1         ; *pXorData++ = v;
-ROM:000383F4                                 CMP             R2, #13
-ROM:000383F6                                 BCC             XOR_Loop
+ROM:000383DC XOR_Loop                          
+ROM:000383DC                 MOVS            R6, #5
+ROM:000383DE                 SDIV.W          R6, R2, R6          ; Calc modulus 5 for XOR-key index 'R2'
+ROM:000383E2                 ADD.W           R6, R6, R6,LSL#2
+ROM:000383E6                 SUBS            R6, R2, R6          ; R6 = R2++ % 5
+ROM:000383E8                 LDRB            R3, [R0]            ; R3 = *pXorData
+ROM:000383EA                 LDRB            R6, [R6,R1]         ; R6 = XorKey[R2++ % 5]
+ROM:000383EC                 EORS            R3, R6              ; v = *pXorData ^ XorKey[R2++ % 5];
+ROM:000383EE                 ADDS            R2, R2, #1
+ROM:000383F0                 STRB.W          R3, [R0],#1         ; *pXorData++ = v;
+ROM:000383F4                 CMP             R2, #13
+ROM:000383F6                 BCC             XOR_Loop
 ROM:000383F6
-ROM:000383F8                                 #
-ROM:000383F8                                 # Copy result data into the buffer 'ResultCtx'
-ROM:000383F8                                 #
-ROM:000383F8                                 ADD.W           R0, SP, #0x30+localDataBuffer+5
-ROM:000383FC                                 BL              swap32
+ROM:000383F8                 #
+ROM:000383F8                 # Copy result data into the buffer 'ResultCtx'
+ROM:000383F8                 #
+ROM:000383F8                 ADD.W           R0, SP, #0x30+localDataBuffer+5
+ROM:000383FC                 BL              swap32
 ROM:000383FC
-ROM:00038400                                 STR             R0, [R4,#ResultCtx]
-ROM:00038402                                 ADD.W           R0, SP, #0x30+localDataBuffer+9
-ROM:00038406                                 BL              swap16
+ROM:00038400                 STR             R0, [R4,#ResultCtx]
+ROM:00038402                 ADD.W           R0, SP, #0x30+localDataBuffer+9
+ROM:00038406                 BL              swap16
 ROM:00038406
-ROM:0003840A                                 STRH            R0, [R4,#ResultCtx.PCnt]
-ROM:0003840C                                 ADD.W           R0, SP, #0x30+localDataBuffer+0xB
-ROM:00038410                                 BL              swap16
+ROM:0003840A                 STRH            R0, [R4,#ResultCtx.PCnt]
+ROM:0003840C                 ADD.W           R0, SP, #0x30+localDataBuffer+0xB
+ROM:00038410                 BL              swap16
 ROM:00038410
-ROM:00038414                                 STRH            R0, [R4,#ResultCtx.AvgTime]
-ROM:00038416                                 ADD.W           R0, SP, #0x30+localDataBuffer+0xD
-ROM:0003841A                                 BL              swap32
+ROM:00038414                 STRH            R0, [R4,#ResultCtx.AvgTime]
+ROM:00038416                 ADD.W           R0, SP, #0x30+localDataBuffer+0xD
+ROM:0003841A                 BL              swap32
 ROM:0003841A
-ROM:0003841E                                 STR             R0, [R4,#ResultCtx.PulseCnt]
-ROM:00038420                                 LDRB.W          R0, [SP,#0x30+localDataBuffer+0x11]
-ROM:00038424                                 STRB            R0, [R4,#ResultCtx.Power]
-ROM:00038426                                 LDR             R0, [R4,#ResultCtx]
-ROM:00038428                                 CMP             R5, R0
-ROM:0003842A                                 BEQ             skip
+ROM:0003841E                 STR             R0, [R4,#ResultCtx.PulseCnt]
+ROM:00038420                 LDRB.W          R0, [SP,#0x30+localDataBuffer+0x11]
+ROM:00038424                 STRB            R0, [R4,#ResultCtx.Power]
+ROM:00038426                 LDR             R0, [R4,#ResultCtx]
+ROM:00038428                 CMP             R5, R0
+ROM:0003842A                 BEQ             skip
 ROM:0003842A
-ROM:0003842C                                 MOVS            R0, #0
-ROM:0003842E                                 MOVS            R1, #0
-ROM:00038430                                 MOV             R2, R0
-ROM:00038432                                 MOV             R3, R0
-ROM:00038434                                 STMIA           R4!, {R0-R3}
+ROM:0003842C                 MOVS            R0, #0
+ROM:0003842E                 MOVS            R1, #0
+ROM:00038430                 MOV             R2, R0
+ROM:00038432                 MOV             R3, R0
+ROM:00038434                 STMIA           R4!, {R0-R3}
 ROM:00038436
-ROM:00038436 skip                                             
-ROM:00038436                                 ADD             SP, SP, #0x20
-ROM:00038438                                 POP             {R4-R6,PC}
+ROM:00038436 skip                             
+ROM:00038436                 ADD             SP, SP, #0x20
+ROM:00038438                 POP             {R4-R6,PC}
 ROM:00038438
 
-00000000 ResultCtx                       struc ; (sizeof=0xD)
-00000000 FixedSerial                     DCD ?
-00000004 PCnt                            DCW ?
-00000006 AvgTime                         DCW ?
-00000008 PulseCnt                        DCD ?
-0000000C Power                           DCB ?
-0000000D ResultCtx                       ends
+00000000 ResultCtx           struc ; (sizeof=0xD)
+00000000 FixedSerial         DCD ?
+00000004 PCnt                DCW ?
+00000006 AvgTime             DCW ?
+00000008 PulseCnt            DCD ?
+0000000C Power               DCB ?
+0000000D ResultCtx           ends
 ```
 
 To visualize the function input buffers, we set a BreakPoint on address `0x00383aa`, and dump the memory of the following registers:
@@ -1458,7 +1458,7 @@ Now we can manually follow the ARM assembly code to calculate the XOR-key at `0x
   Result:      11 49 00 07 0f 00 08 a0 49 00 00 ff ff 00 00 00 00 64
 ```
 
-Now that we understand the assembly code, we can rewrite in in C:
+Now that we understand the assembly code, we can rewrite it in in C:
 
 
 To be continued...
