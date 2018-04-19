@@ -124,3 +124,21 @@ int main(void)
   sub_33532();
   return 0;
 }
+
+
+typedef struct SpiPkt {
+    uint8_t LengthField;
+    uint8_t AddressField;
+
+    uint8_t Cnt;
+    uint16_t Status;
+
+    uint32_t FixedSerial; // XOR'ed
+    uint16_t PCnt;        // XOR'ed
+    uint16_t AvgTime;     // XOR'ed
+    uint32_t PulseCnt;    // XOR'ed
+    uint8_t  Power;       // XOR'ed
+
+    uint16_t Crc16;
+} SpiPkt;
+

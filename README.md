@@ -1250,14 +1250,17 @@ user@user-virtual-machine:~/OpenOCD$
 This address, `0x10003650`, is located on the stack. Lets set a WatchPoint (i.e. a BreakPoint on data access) in OpenOCD on that address:
 ```
 > wp 0x10003650 4 r
+
 > resume
 ```
-After a few seconds, our WatchPoint is hit:
+After a few seconds, our WatchPoint is triggered:
 ```
 target halted due to watchpoint, current mode: Thread 
 xPSR: 0x81000000 pc: 0x000383ba msp: 0x10003650
+
 > mdw 0x10003650 
 0x10003650: a2cfb77e 
+
 > reg
 ===== arm v7m registers
 (0) r0 (/32): 0x10003661
@@ -1290,13 +1293,11 @@ I will spare you the digging details and just show you the annotated result:
 
 ```Assembly
 //
-// Prototype: int __fastcall XOR_function(unsigned __int8 *r0_pktBuf, int *r1_pSerialNumber)
+// Prototype: int __fastcall XOR_function(uint8_t *r0_pktBuf, uint8_t *r1_pSerialNumber)
 //
-ROM:0003839E
 ROM:0003839E XorSeed         = -0x30
 ROM:0003839E XorKey          = -0x2C
 ROM:0003839E localDataBuffer = -0x24
-ROM:0003839E
 ROM:0003839E
 ROM:0003839E          #
 ROM:0003839E          # Copy SPI pktdata to a local stack buffer
@@ -1408,46 +1409,61 @@ To visualize the function input buffers, we set a BreakPoint on address `0x00383
 ```
 > bp 0x000383aa 2
 breakpoint set at 0x000383aa
+
 > resume
 target halted due to breakpoint, current mode: Thread 
 xPSR: 0x01000000 pc: 0x000383aa msp: 0x10003650
+
 > reg r1
 r1 (/32): 0x10002DCC
+
 > mdb 0x10002DCC 0x12
 0x10002dcc: 11 49 00 07 0f a2 76 17 0e cf a2 81 48 47 cf a2 7e d3 
+
 > reg r4
 r4 (/32): 0x1000368C
+
 > mdw 0x1000368c
 0x1000368c: 0008a049
 ```
-The SPI pktdata bytes, `11 43 00` ..., looks just like packets we have seen [before](#experiment-2-controlling-input-data).
+The SPI pktdata bytes, `11 49 00` ..., looks just like packets we have seen [before](#experiment-2-controlling-input-data).
 The serial number, `0008a049`, when converted to decimal form, is `565321`, which is part of our device serial number `400 565 321`.
 
 To investigate further, we remove our BreakPoint at `0x000383AA`, and add two new ones at `0x000383da` where the XOR-loop begins, and `0x000383f8` where the XOR-loop is done.
   * R0 = pXorData
   * R1 = pXorKey
 ```
-rbp 0x00383AA
+> rbp 0x00383AA
+
 > bp 0x383da 2                                                   <--- Set first BreakPoint before XOR-loop
 breakpoint set at 0x000383da
+
 > bp 0x383f8 2                                                   <--- Set second BreakPoint after XOR-loop
 breakpoint set at 0x000383f8
+
 > resume
 target halted due to breakpoint, current mode: Thread            <--- First BreakPoint Hit
 xPSR: 0x01000000 pc: 0x000383da msp: 0x10003650
+
 > reg r0
 r0 (/32): 0x10003661
+
 > reg r1
 r1 (/32): 0x10003654
+
 > mdb 0x10003661 0x0d
 0x10003661: a2 76 17 0e cf a2 81 48 47 cf a2 7e d3               <--- pXorData before XOR-loop
+
 > mdb 0x10003654 0x05
 0x10003654: a2 7e b7 47 cf                                       <--- pXorKey before XOR-loop
+
 > resume
 target halted due to breakpoint, current mode: Thread            <--- Second BreakPoint Hit
 xPSR: 0x61000000 pc: 0x000383f8 msp: 0x10003650
+
 > mdb 0x10003661 20
 0x10003661: 00 08 a0 49 00 00 ff ff 00 00 00 00 64               <--- pXorData after XOR-loop
+
 > mdb 0x10003654 5
 0x10003654: a2 7e b7 47 cf                                       <--- pXorKey after XOR-loop
 ```
@@ -1612,7 +1628,8 @@ In this article we have analysed the reception of signals sent by the IKEA Spars
   * Radio analysis using SDR and numeric processing.
   * Reading the receiver device flash memory using JTAG, and analysing the assembler code in order to create a C-implementation.
 
-The two approaches have both pros and cons. TODO: Write something insightful here...
+The two approaches have both pros and cons. 
+While the Radio is quite easy to start with, it quickly comes down to numeric analysis which requires time, patience and some luck. The hardware board approach on the other side requires another set of skills, but once you master those skills you can read the code and understand exactly how it works.
 
 # Build a hardware receiver using a CC1101
 
@@ -1639,5 +1656,6 @@ Insert link here
 
 # Ideas for the future
 * Build a software receiver using GNU Radio
+* Attempt to modify the flash firmware and write it back
 
 
