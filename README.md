@@ -1511,6 +1511,20 @@ Now that we understand the assembly code, we can rewrite it in in C:
 /*----------------------------------------------------------------------------
  * Function argument container
  *----------------------------------------------------------------------------*/
+typedef struct SpiPkt 
+{
+  uint8_t  LengthField;
+  uint8_t  AddressField;
+  uint8_t  Cnt;
+  uint16_t Status;
+  uint32_t FixedSerial; // XOR'ed data
+  uint16_t PCnt;        // XOR'ed data
+  uint16_t AvgTime;     // XOR'ed data
+  uint32_t PulseCnt;    // XOR'ed data
+  uint8_t  Power;       // XOR'ed data
+  uint16_t Crc16;
+} SpiPkt;
+
 typedef struct Ctx 
 {
   uint32_t FixedSerial;
